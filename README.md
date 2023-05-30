@@ -1,2 +1,2 @@
-# main-pipelines
-main repository for cgap pipeline
+# SMaHT Pipelines
+Main repository for SMaHT pipeline
