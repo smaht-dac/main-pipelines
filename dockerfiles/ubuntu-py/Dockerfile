@@ -46,7 +46,7 @@ RUN conda update -y conda \
     && rm Miniconda3-${CONDA_VER}-Linux-${OS_TYPE}.sh
 RUN conda config --add channels bioconda && conda config --add channels conda-forge
 
-## Install Python
+## Install Python and JDK
 RUN conda install -c bioconda -y python=${PYTHON_VERSION} openjdk=${JDK_VERSION} && \
     conda clean -a -y -f
 
