@@ -1,0 +1,9 @@
+[submodule "qc-pipelines"]
+	path = qc-pipelines
+	url = https://github.com/smaht-dac/qc-pipelines
+[submodule "shared-pipelines"]
+	path = shared-pipelines
+	url = https://github.com/smaht-dac/shared-pipelines
+[submodule "sentieon-pipelines"]
+	path = sentieon-pipelines
+	url = https://github.com/smaht-dac/sentieon-pipelines
