@@ -1,12 +1,13 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: paired-end_short_reads_alignment
+name: paired-end_short_reads_alignment_hg19
 description: Pipeline to align paired-end short reads data for a single sample. |
              Run BWA-MEM for alignment, incorporate read groups, |
              mark duplicate reads, perform indel realignment, |
              and recalibrate base and indel scores. |
-             The output is an analysis-ready file in BAM format
+             The output is an analysis-ready file in BAM format. |
+             Build hg19/GRCh37
 
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments
@@ -26,22 +27,22 @@ input:
   genome_reference_fasta:
     argument_type: file.fa
     files:
-      -
+      - complete-reference-fasta-plus-hs37d5@g1k_GRCh37
 
   genome_reference_bwt:
     argument_type: file.bwt
     files:
-      -
+      - complete-reference-bwt-plus-hs37d5@g1k_GRCh37
 
   known_sites_indel:
     argument_type: file.vcf_gz
     files:
-      -
+      - mills-1000g-gold-standard-indel@hg19
 
   known_sites_snp:
     argument_type: file.vcf_gz
     files:
-      -
+      - dbsnp-all@138_hg19
 
   # Parameter arguments
   sample_name:
