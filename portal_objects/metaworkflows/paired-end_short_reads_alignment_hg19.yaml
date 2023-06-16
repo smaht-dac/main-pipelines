@@ -209,9 +209,9 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  #   sentieon_dedup_realign_recal
+  #   sentieon_Dedup
   ############################################
-  sentieon_dedup_realign_recal:
+  sentieon_Dedup:
 
     ## Lock version ####################
     ####################################
@@ -225,6 +225,115 @@ workflows:
       input_file_bam:
         argument_type: file.bam
         source: samtools_merge
+        source_argument_name: output_file_bam
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        file_type: sentieon Dedup output BAM
+        # s3_lifecycle_category: long_term_access_long_term_archive
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5n.9xlarge
+        - c5.9xlarge
+        - c5a.8xlarge
+        - c5.12xlarge
+        - c5a.12xlarge
+        - c6i.8xlarge
+        - c6i.12xlarge
+        - m6a.8xlarge
+        - m6a.12xlarge
+        - m6i.8xlarge
+        - m6i.12xlarge
+      ebs_size: "5x"
+      EBS_optimized: True
+      spot_instance: True
+      run_name: run_sentieon_Dedup
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   sentieon_Realigner
+  ############################################
+  sentieon_Realigner:
+
+    ## Lock version ####################
+    ####################################
+    version: 0.0.1
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: sentieon_Dedup
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      known_sites_indel:
+        argument_type: file.vcf_gz
+        source_argument_name: known_sites_snp
+        # We are using the dbSNP dataset also for indels realignment
+        # In this situation it is better than Mills for this genome assembly
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        file_type: sentieon Realigner output BAM
+        # s3_lifecycle_category: long_term_access_long_term_archive
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5n.9xlarge
+        - c5.9xlarge
+        - c5a.8xlarge
+        - c5.12xlarge
+        - c5a.12xlarge
+        - c6i.8xlarge
+        - c6i.12xlarge
+        - m6a.8xlarge
+        - m6a.12xlarge
+        - m6i.8xlarge
+        - m6i.12xlarge
+      ebs_size: "5x"
+      EBS_optimized: True
+      spot_instance: True
+      run_name: run_sentieon_Realigner
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   sentieon_QualCal
+  ############################################
+  sentieon_QualCal:
+
+    ## Lock version ####################
+    ####################################
+    version: 0.0.1
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: sentieon_Realigner
         source_argument_name: output_file_bam
 
       genome_reference_fasta:
@@ -253,11 +362,8 @@ workflows:
     config:
       instance_type:
         - c5n.9xlarge
-        - c5.9xlarge
-        - c5a.8xlarge
         - c5.12xlarge
         - c5a.12xlarge
-        - c6i.8xlarge
         - c6i.12xlarge
         - m6a.8xlarge
         - m6a.12xlarge
@@ -266,5 +372,5 @@ workflows:
       ebs_size: "5x"
       EBS_optimized: True
       spot_instance: True
-      run_name: run_sentieon_dedup_realign_recal
+      run_name: run_sentieon_QualCal
       behavior_on_capacity_limit: wait_and_retry

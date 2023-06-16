@@ -252,11 +252,8 @@ workflows:
     config:
       instance_type:
         - c5n.9xlarge
-        - c5.9xlarge
-        - c5a.8xlarge
         - c5.12xlarge
         - c5a.12xlarge
-        - c6i.8xlarge
         - c6i.12xlarge
         - m6a.8xlarge
         - m6a.12xlarge
