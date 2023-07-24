@@ -109,8 +109,10 @@ workflows:
         - m6i.8xlarge
         - m6i.12xlarge
       ebs_size: "6.3x"
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_sentieon_bwa-mem_sort
       behavior_on_capacity_limit: wait_and_retry
 
@@ -157,8 +159,10 @@ workflows:
       instance_type:
         - c5.2xlarge
       ebs_size: "3.5x"
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_AddReadGroups
       behavior_on_capacity_limit: wait_and_retry
 
@@ -203,8 +207,10 @@ workflows:
       instance_type:
         - c5.2xlarge
       ebs_size: "3x"
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_samtools_merge
       behavior_on_capacity_limit: wait_and_retry
 
@@ -242,19 +248,18 @@ workflows:
     config:
       instance_type:
         - c5n.9xlarge
-        - c5.9xlarge
-        - c5a.8xlarge
         - c5.12xlarge
         - c5a.12xlarge
-        - c6i.8xlarge
         - c6i.12xlarge
         - m6a.8xlarge
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
       ebs_size: "5x"
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_sentieon_Dedup
       behavior_on_capacity_limit: wait_and_retry
 
@@ -312,8 +317,10 @@ workflows:
         - m6i.8xlarge
         - m6i.12xlarge
       ebs_size: "5x"
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_sentieon_Realigner
       behavior_on_capacity_limit: wait_and_retry
 
@@ -370,7 +377,9 @@ workflows:
         - m6i.8xlarge
         - m6i.12xlarge
       ebs_size: "5x"
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_sentieon_QualCal
       behavior_on_capacity_limit: wait_and_retry
