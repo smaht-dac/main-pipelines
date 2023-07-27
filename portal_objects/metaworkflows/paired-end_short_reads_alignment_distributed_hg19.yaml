@@ -1,13 +1,14 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: paired-end_short_reads_alignment_hg19
+name: paired-end_short_reads_alignment_distributed_hg19
 description: Pipeline to align paired-end short reads data for a single sample. |
              Run BWA-MEM for alignment, incorporate read groups, |
              mark duplicate reads, perform indel realignment, |
              and recalibrate base and indel scores. |
              The output is an analysis-ready file in BAM format. |
-             Build hg19/GRCh37
+             Build hg19/GRCh37. |
+             Implemented to run in distributed mode and processing reads by lane
 
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments
@@ -23,6 +24,9 @@ input:
   input_files_r2_fastq_gz:
     argument_type: file.fastq
     dimensionality: 1
+
+  # !! FASTQ files need to be organized by lane,
+  # with reads for each lane in a FASTQ pair
 
   genome_reference_fasta:
     argument_type: file.fa
@@ -43,6 +47,20 @@ input:
     argument_type: file.vcf_gz
     files:
       - dbsnp-all@138_hg19
+
+  shards_files:
+    argument_type: file.txt
+    files:
+      - #0
+      - #1
+      - #2
+      - #3
+      - #4
+      - #5
+      - #6
+      - #7
+      - #8
+      - #9
 
   # Parameter arguments
   sample_name:
@@ -167,13 +185,17 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # samtools_merge
+  #   sentieon_LocusCollector
   ############################################
-  samtools_merge:
+  sentieon_LocusCollector:
 
     ## Lock version ####################
     ####################################
     version: 0.0.1
+
+    ## Lock shards ####################
+    ####################################
+    shards: [['0'], ['1'], ['2'], ['3'], ['4'], ['5'], ['6'], ['7'], ['8'], ['9']]
 
     ## Specific arguments ##############
     ####################################
@@ -184,12 +206,15 @@ workflows:
         argument_type: file.bam
         source: AddReadGroups
         source_argument_name: output_file_bam
-        gather: 1
+        gather_input: 1
+        # Since it works by region we mount the files
+        mount: True
 
-      # Parameter argument
-      nthreads:
-        argument_type: parameter.integer
-        value: "8"
+      # Regions
+      shards_file_txt:
+        argument_type: file.txt
+        source_argument_name: shards_files
+        input_dimension: 1
 
     ## Output ##########################
     #     Output files for the workflow
@@ -197,27 +222,34 @@ workflows:
     output:
 
       # File output
-      output_file_bam:
-        file_type: samtools merge output BAM
-        # s3_lifecycle_category: no_storage
+      output_table_vcf_gz:
+        file_type: sentieon LocusCollector output VCF
+        # s3_lifecycle_category: long_term_access_long_term_archive
 
     ## EC2 Configuration to use ########
     ####################################
     config:
       instance_type:
-        - c5.2xlarge
-      ebs_size: "3x"
+        - c5n.9xlarge
+        - c5.12xlarge
+        - c5a.12xlarge
+        - c6i.12xlarge
+        - m6a.8xlarge
+        - m6a.12xlarge
+        - m6i.8xlarge
+        - m6i.12xlarge
+      ebs_size: "1.5x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: False
-      run_name: run_samtools_merge
+      run_name: sentieon_LocusCollector
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  #   sentieon_Dedup
+  #   sentieon_LocusCollector_apply
   ############################################
-  sentieon_Dedup:
+  sentieon_LocusCollector_apply:
 
     ## Lock version ####################
     ####################################
@@ -230,8 +262,15 @@ workflows:
       # File argument
       input_file_bam:
         argument_type: file.bam
-        source: samtools_merge
+        source: AddReadGroups
         source_argument_name: output_file_bam
+
+      # File argument
+      input_tables_vcf_gz:
+        argument_type: file.vcf_gz
+        source: sentieon_LocusCollector
+        source_argument_name: output_table_vcf_gz
+        gather_input: 1
 
     ## Output ##########################
     #     Output files for the workflow
@@ -241,7 +280,7 @@ workflows:
       # File output
       output_file_bam:
         file_type: sentieon Dedup output BAM
-        # s3_lifecycle_category: long_term_access_long_term_archive
+        # s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -260,7 +299,7 @@ workflows:
       ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: False
-      run_name: run_sentieon_Dedup
+      run_name: sentieon_LocusCollector_apply
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
@@ -279,7 +318,7 @@ workflows:
       # File argument
       input_file_bam:
         argument_type: file.bam
-        source: sentieon_Dedup
+        source: sentieon_LocusCollector_apply
         source_argument_name: output_file_bam
 
       genome_reference_fasta:
@@ -299,7 +338,7 @@ workflows:
       # File output
       output_file_bam:
         file_type: sentieon Realigner output BAM
-        # s3_lifecycle_category: long_term_access_long_term_archive
+        # s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -359,9 +398,7 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: analysis-ready BAM
-        linkto_location:
-          - Sample
+        file_type: sentieon QualCal output BAM
         # s3_lifecycle_category: long_term_access_long_term_archive
 
     ## EC2 Configuration to use ########
@@ -382,4 +419,54 @@ workflows:
       EBS_optimized: True
       spot_instance: False
       run_name: run_sentieon_QualCal
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  # samtools_merge
+  ############################################
+  samtools_merge:
+
+    ## Lock version ####################
+    ####################################
+    version: 0.0.1
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_files_bam:
+        argument_type: file.bam
+        source: sentieon_QualCal
+        source_argument_name: output_file_bam
+        gather: 1
+
+      # Parameter argument
+      nthreads:
+        argument_type: parameter.integer
+        value: "8"
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        file_type: analysis-ready BAM
+        linkto_location:
+          - Sample
+        # s3_lifecycle_category: long_term_access_long_term_archive
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.2xlarge
+      ebs_size: "3x"
+      ebs_iops: 16000
+      ebs_throughput: 1000
+      EBS_optimized: True
+      spot_instance: False
+      run_name: run_samtools_merge
       behavior_on_capacity_limit: wait_and_retry
