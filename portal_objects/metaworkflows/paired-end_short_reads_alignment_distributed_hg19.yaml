@@ -48,23 +48,19 @@ input:
     files:
       - dbsnp-all@138_hg19
 
-  shards_files:
+  shards_file:
     argument_type: file.txt
     files:
-      - #0
-      - #1
-      - #2
-      - #3
-      - #4
-      - #5
-      - #6
-      - #7
-      - #8
-      - #9
+      - regions-200M-16shards@g1k_GRCh37
 
   # Parameter arguments
   sample_name:
     argument_type: parameter.string
+
+  shards_index:
+    # These shards need to match the number of shards in shards_file
+    argument_type: parameter.json
+    value: '["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]'
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
@@ -195,7 +191,8 @@ workflows:
 
     ## Lock shards ####################
     ####################################
-    shards: [['0'], ['1'], ['2'], ['3'], ['4'], ['5'], ['6'], ['7'], ['8'], ['9']]
+    shards: [['0'], ['1'], ['2'], ['3'], ['4'], ['5'], ['6'], ['7'], ['8'], ['9'], ['10'], ['11'], ['12'], ['13'], ['14'], ['15']]
+    # These shards structure needs to match the number of shards in shards_file and defined by shards_index
 
     ## Specific arguments ##############
     ####################################
@@ -213,7 +210,11 @@ workflows:
       # Regions
       shards_file_txt:
         argument_type: file.txt
-        source_argument_name: shards_files
+        source_argument_name: shards_file
+
+      shard_index:
+        argument_type: parameter.json
+        source_argument_name: shards_index
         input_dimension: 1
 
     ## Output ##########################
@@ -294,7 +295,7 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-      ebs_size: "4x"
+      ebs_size: "3x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
@@ -355,7 +356,7 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-      ebs_size: "5x"
+      ebs_size: "4x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True

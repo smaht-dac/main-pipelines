@@ -255,7 +255,7 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-      ebs_size: "4x"
+      ebs_size: "3x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
@@ -316,7 +316,7 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-      ebs_size: "5x"
+      ebs_size: "4x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
