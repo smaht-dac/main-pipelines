@@ -8,7 +8,9 @@ description: Pipeline to align paired-end short reads data for a single sample. 
              and recalibrate base and indel scores. |
              The output is an analysis-ready file in BAM format. |
              Build hg19/GRCh37. |
-             Implemented to run in distributed mode and processing reads by lane
+             Implemented to run in distributed mode and processing reads by lane. |
+             This implementation allows to further split reads per each lane in |
+             smaller subsets and process them in parallel
 
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments
@@ -19,14 +21,17 @@ input:
   # File arguments
   input_files_r1_fastq_gz:
     argument_type: file.fastq
-    dimensionality: 1
+    dimensionality: 2
 
   input_files_r2_fastq_gz:
     argument_type: file.fastq
-    dimensionality: 1
+    dimensionality: 2
 
-  # !! FASTQ files need to be organized by lane,
-  # with reads for each lane in a FASTQ pair
+  # !! FASTQ files need to be organized by lanes and shards as the following example:
+  # -> input_files_r1_fastq_gz
+  #   [ [shard_0_lane_0_r1, shard_1_lane_0_r1], [shard_0_lane_1_r1], [shard_0_lane_2_r1, shard_1_lane_2_r1, shard_2_lane_2_r1], ... ]
+  # -> input_files_r2_fastq_gz
+  #   [ [shard_0_lane_0_r2, shard_1_lane_0_r2], [shard_0_lane_1_r2], [shard_0_lane_2_r2, shard_1_lane_2_r2, shard_2_lane_2_r2], ... ]
 
   genome_reference_fasta:
     argument_type: file.fa
@@ -57,8 +62,11 @@ input:
   sample_name:
     argument_type: parameter.string
 
+  library_id:
+    argument_type: parameter.string
+
   shards_index:
-    # These shards need to match the number of shards in shards_file
+    # These indexes need to match the number of shards in shards_file
     argument_type: parameter.json
     value: '["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]'
 
@@ -84,12 +92,12 @@ workflows:
       input_file_r1_fastq_gz:
         argument_type: file.fastq
         source_argument_name: input_files_r1_fastq_gz
-        scatter: 1
+        scatter: 2
 
       input_file_r2_fastq_gz:
         argument_type: file.fastq
         source_argument_name: input_files_r2_fastq_gz
-        scatter: 1
+        scatter: 2
 
       genome_reference_fasta:
         argument_type: file.fa
@@ -111,22 +119,17 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5n.9xlarge
         - c5.9xlarge
-        - c5a.8xlarge
-        - c5.12xlarge
-        - c5a.12xlarge
         - c6i.8xlarge
-        - c6i.12xlarge
-        - m6a.8xlarge
-        - m6a.12xlarge
+        - c6a.8xlarge
         - m6i.8xlarge
-        - m6i.12xlarge
+        - m6a.8xlarge
+        - m7i.8xlarge
       ebs_size: "4x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: False
+      spot_instance: True
       run_name: run_sentieon_bwa-mem_sort
       behavior_on_capacity_limit: wait_and_retry
 
@@ -153,9 +156,12 @@ workflows:
       sample_name:
         argument_type: parameter.string
 
+      library_id:
+        argument_type: parameter.string
+
       nthreads:
         argument_type: parameter.integer
-        value: "8"
+        value: "4"
 
     ## Output ##########################
     #     Output files for the workflow
@@ -171,12 +177,12 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5.2xlarge
+        - c5.xlarge
       ebs_size: "3.5x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: False
+      spot_instance: True
       run_name: run_AddReadGroups
       behavior_on_capacity_limit: wait_and_retry
 
@@ -231,19 +237,18 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5n.9xlarge
-        - c5.12xlarge
-        - c5a.12xlarge
-        - c6i.12xlarge
-        - m6a.8xlarge
-        - m6a.12xlarge
-        - m6i.8xlarge
-        - m6i.12xlarge
-      ebs_size: "1.5x"
-      ebs_iops: 16000
-      ebs_throughput: 1000
+        - c5.9xlarge
+        - m5.4xlarge
+        - m5n.4xlarge
+        - m5a.4xlarge
+        - c6i.8xlarge
+        - c6a.8xlarge
+        - m6i.4xlarge
+        - m6a.4xlarge
+        - m7i.4xlarge
+      ebs_size: "0.5x"
       EBS_optimized: True
-      spot_instance: False
+      spot_instance: True
       run_name: sentieon_LocusCollector
       behavior_on_capacity_limit: wait_and_retry
 
@@ -287,19 +292,17 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5n.9xlarge
-        - c5.12xlarge
-        - c5a.12xlarge
-        - c6i.12xlarge
-        - m6a.8xlarge
-        - m6a.12xlarge
+        - c5.9xlarge
+        - c6i.8xlarge
+        - c6a.8xlarge
         - m6i.8xlarge
-        - m6i.12xlarge
+        - m6a.8xlarge
+        - m7i.8xlarge
       ebs_size: "3x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: False
+      spot_instance: True
       run_name: sentieon_LocusCollector_apply
       behavior_on_capacity_limit: wait_and_retry
 
@@ -345,29 +348,24 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5n.9xlarge
         - c5.9xlarge
-        - c5a.8xlarge
-        - c5.12xlarge
-        - c5a.12xlarge
         - c6i.8xlarge
-        - c6i.12xlarge
-        - m6a.8xlarge
-        - m6a.12xlarge
+        - c6a.8xlarge
         - m6i.8xlarge
-        - m6i.12xlarge
-      ebs_size: "4x"
+        - m6a.8xlarge
+        - m7i.8xlarge
+      ebs_size: "3.5x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: False
+      spot_instance: True
       run_name: run_sentieon_Realigner
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  #   sentieon_QualCal
+  #   sentieon_QualCal_merge
   ############################################
-  sentieon_QualCal:
+  sentieon_QualCal_merge:
 
     ## Lock version ####################
     ####################################
@@ -378,10 +376,11 @@ workflows:
     input:
 
       # File argument
-      input_file_bam:
+      input_files_bam:
         argument_type: file.bam
         source: sentieon_Realigner
         source_argument_name: output_file_bam
+        gather: 1
 
       genome_reference_fasta:
         argument_type: file.fa
@@ -406,20 +405,18 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5n.9xlarge
-        - c5.12xlarge
-        - c5a.12xlarge
-        - c6i.12xlarge
-        - m6a.8xlarge
-        - m6a.12xlarge
+        - c5.9xlarge
+        - c6i.8xlarge
+        - c6a.8xlarge
         - m6i.8xlarge
-        - m6i.12xlarge
+        - m6a.8xlarge
+        - m7i.8xlarge
       ebs_size: "5x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
-      spot_instance: False
-      run_name: run_sentieon_QualCal
+      spot_instance: True
+      run_name: sentieon_QualCal_merge
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
@@ -438,7 +435,7 @@ workflows:
       # File argument
       input_files_bam:
         argument_type: file.bam
-        source: sentieon_QualCal
+        source: sentieon_QualCal_merge
         source_argument_name: output_file_bam
         gather: 1
 

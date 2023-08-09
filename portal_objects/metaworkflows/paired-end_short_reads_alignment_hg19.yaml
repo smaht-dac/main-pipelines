@@ -48,6 +48,9 @@ input:
   sample_name:
     argument_type: parameter.string
 
+  library_id:
+    argument_type: parameter.string
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -137,6 +140,9 @@ workflows:
 
       # Parameter argument
       sample_name:
+        argument_type: parameter.string
+
+      library_id:
         argument_type: parameter.string
 
       nthreads:
@@ -316,7 +322,7 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-      ebs_size: "4x"
+      ebs_size: "3.5x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
