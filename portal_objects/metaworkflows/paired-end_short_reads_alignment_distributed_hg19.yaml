@@ -113,7 +113,6 @@ workflows:
       # File output
       output_file_bam:
         file_type: BWA-MEM output BAM
-        # s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -126,8 +125,8 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
       ebs_size: "4x"
-      ebs_iops: 16000
-      ebs_throughput: 1000
+      # ebs_iops: 16000
+      # ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: True
       run_name: run_sentieon_bwa-mem_sort
@@ -171,7 +170,6 @@ workflows:
       # File output
       output_file_bam:
         file_type: AddReadGroups output BAM
-        # s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -179,8 +177,8 @@ workflows:
       instance_type:
         - c5.xlarge
       ebs_size: "3.5x"
-      ebs_iops: 16000
-      ebs_throughput: 1000
+      # ebs_iops: 16000
+      # ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: True
       run_name: run_AddReadGroups
@@ -231,21 +229,18 @@ workflows:
       # File output
       output_table_vcf_gz:
         file_type: sentieon LocusCollector output VCF
-        # s3_lifecycle_category: long_term_access_long_term_archive
 
     ## EC2 Configuration to use ########
     ####################################
     config:
       instance_type:
-        - c5.9xlarge
-        - m5.4xlarge
-        - m5n.4xlarge
-        - m5a.4xlarge
-        - c6i.8xlarge
-        - c6a.8xlarge
-        - m6i.4xlarge
-        - m6a.4xlarge
-        - m7i.4xlarge
+        # we may need to use larger machines if we scale up coverage
+        # these have been tested for 750x WGS
+        - r5.4xlarge
+        - r5n.4xlarge
+        - r5a.4xlarge
+        - r6i.4xlarge
+        - r6a.4xlarge
       ebs_size: "0.5x"
       EBS_optimized: True
       spot_instance: True
@@ -286,7 +281,6 @@ workflows:
       # File output
       output_file_bam:
         file_type: sentieon Dedup output BAM
-        # s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -299,8 +293,8 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
       ebs_size: "3x"
-      ebs_iops: 16000
-      ebs_throughput: 1000
+      # ebs_iops: 16000
+      # ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: True
       run_name: sentieon_LocusCollector_apply
@@ -342,7 +336,6 @@ workflows:
       # File output
       output_file_bam:
         file_type: sentieon Realigner output BAM
-        # s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -355,8 +348,8 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
       ebs_size: "3.5x"
-      ebs_iops: 16000
-      ebs_throughput: 1000
+      # ebs_iops: 16000
+      # ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: True
       run_name: run_sentieon_Realigner
@@ -399,7 +392,6 @@ workflows:
       # File output
       output_file_bam:
         file_type: sentieon QualCal output BAM
-        # s3_lifecycle_category: long_term_access_long_term_archive
 
     ## EC2 Configuration to use ########
     ####################################
@@ -412,17 +404,17 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
       ebs_size: "5x"
-      ebs_iops: 16000
-      ebs_throughput: 1000
+      # ebs_iops: 16000
+      # ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: True
       run_name: sentieon_QualCal_merge
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # samtools_merge
+  # sentieon_merge
   ############################################
-  samtools_merge:
+  sentieon_merge:
 
     ## Lock version ####################
     ####################################
@@ -438,11 +430,8 @@ workflows:
         source: sentieon_QualCal_merge
         source_argument_name: output_file_bam
         gather: 1
-
-      # Parameter argument
-      nthreads:
-        argument_type: parameter.integer
-        value: "8"
+        # Since it parallelize efficiently we mount the files
+        mount: True
 
     ## Output ##########################
     #     Output files for the workflow
@@ -454,17 +443,16 @@ workflows:
         file_type: analysis-ready BAM
         linkto_location:
           - Sample
-        # s3_lifecycle_category: long_term_access_long_term_archive
 
     ## EC2 Configuration to use ########
     ####################################
     config:
       instance_type:
-        - c5.2xlarge
+        - c5.4xlarge
       ebs_size: "3x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: False
-      run_name: run_samtools_merge
+      run_name: run_sentieon_merge
       behavior_on_capacity_limit: wait_and_retry

@@ -94,7 +94,6 @@ workflows:
       # File output
       output_file_bam:
         file_type: BWA-MEM output BAM
-        # s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -157,7 +156,6 @@ workflows:
       # File output
       output_file_bam:
         file_type: AddReadGroups output BAM
-        # s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -205,7 +203,6 @@ workflows:
       # File output
       output_file_bam:
         file_type: samtools merge output BAM
-        # s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -247,7 +244,6 @@ workflows:
       # File output
       output_file_bam:
         file_type: sentieon Dedup output BAM
-        # s3_lifecycle_category: long_term_access_long_term_archive
 
     ## EC2 Configuration to use ########
     ####################################
@@ -297,6 +293,10 @@ workflows:
         # We are using the dbSNP dataset also for indels realignment
         # In this situation it is better than Mills for this genome assembly
 
+      nthreads:
+        argument_type: parameter.integer
+        value: "16"
+
     ## Output ##########################
     #     Output files for the workflow
     ####################################
@@ -305,23 +305,16 @@ workflows:
       # File output
       output_file_bam:
         file_type: sentieon Realigner output BAM
-        # s3_lifecycle_category: long_term_access_long_term_archive
 
     ## EC2 Configuration to use ########
     ####################################
     config:
       instance_type:
-        - c5n.9xlarge
-        - c5.9xlarge
-        - c5a.8xlarge
-        - c5.12xlarge
-        - c5a.12xlarge
-        - c6i.8xlarge
-        - c6i.12xlarge
-        - m6a.8xlarge
-        - m6a.12xlarge
-        - m6i.8xlarge
-        - m6i.12xlarge
+        - r5.8xlarge
+        - r5n.8xlarge
+        - r5a.8xlarge
+        - r6i.8xlarge
+        - r6a.8xlarge
       ebs_size: "3.5x"
       ebs_iops: 16000
       ebs_throughput: 1000
@@ -368,7 +361,6 @@ workflows:
         file_type: analysis-ready BAM
         linkto_location:
           - Sample
-        # s3_lifecycle_category: long_term_access_long_term_archive
 
     ## EC2 Configuration to use ########
     ####################################
