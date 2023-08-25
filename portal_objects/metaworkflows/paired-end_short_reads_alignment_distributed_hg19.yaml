@@ -125,8 +125,8 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
       ebs_size: "4x"
-      # ebs_iops: 16000
-      # ebs_throughput: 1000
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: True
       run_name: run_sentieon_bwa-mem_sort
@@ -293,8 +293,8 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
       ebs_size: "3x"
-      # ebs_iops: 16000
-      # ebs_throughput: 1000
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: True
       run_name: sentieon_LocusCollector_apply
@@ -348,8 +348,8 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
       ebs_size: "3.5x"
-      # ebs_iops: 16000
-      # ebs_throughput: 1000
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: True
       run_name: run_sentieon_Realigner
@@ -404,17 +404,17 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
       ebs_size: "5x"
-      # ebs_iops: 16000
-      # ebs_throughput: 1000
+      ebs_iops: 16000
+      ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: True
       run_name: sentieon_QualCal_merge
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # sentieon_merge
+  # samtools_merge
   ############################################
-  sentieon_merge:
+  samtools_merge:
 
     ## Lock version ####################
     ####################################
@@ -430,8 +430,11 @@ workflows:
         source: sentieon_QualCal_merge
         source_argument_name: output_file_bam
         gather: 1
-        # Since it parallelize efficiently we mount the files
-        mount: True
+
+      # Parameter argument
+      nthreads:
+        argument_type: parameter.integer
+        value: "8"
 
     ## Output ##########################
     #     Output files for the workflow
@@ -448,11 +451,12 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5.4xlarge
+      instance_type:
+        - c5.2xlarge
       ebs_size: "3x"
       ebs_iops: 16000
       ebs_throughput: 1000
       EBS_optimized: True
       spot_instance: False
-      run_name: run_sentieon_merge
+      run_name: run_samtools_merge
       behavior_on_capacity_limit: wait_and_retry
