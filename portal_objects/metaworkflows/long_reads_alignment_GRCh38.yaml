@@ -1,0 +1,83 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: long_reads_alignment_GRCh38
+description: Run Sentieon minimap2 to align input FASTQ file. |
+             Sort the alignment BAM file by coordinates. |
+             Build hg38/GRCh38
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # Required file arguments
+  input_file_fastq_gz:
+    argument_type: file.fastq
+    dimensionality: 1
+
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  # Required parameter argument
+  preset:
+    argument_type: parameter.string
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #  sentieon_minimap2_sort
+  ############################################
+  sentieon_minimap2_sort:
+
+    ## Lock version ####################
+    ####################################
+    version: 0.0.1
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      input_file_fastq_gz:
+        argument_type: file.fastq
+        scatter: 1
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Required parameter argument
+      preset:
+        argument_type: parameter.string
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_bam:
+        file_type: minimap2 output BAM
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m6a.8xlarge
+        - m6i.8xlarge
+        - r6i.4xlarge
+        - r6i.8xlarge
+        - r6a.4xlarge
+        - r6a.8xlarge
+        - r5.4xlarge
+        - r5.8xlarge
+      ebs_size: "6x"
+      EBS_optimized: True
+      spot_instance: True
+      run_name: run_sentieon_minimap2_sort
+      behavior_on_capacity_limit: wait_and_retry
