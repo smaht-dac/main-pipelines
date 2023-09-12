@@ -109,7 +109,7 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: BWA-MEM output BAM
+        file_type: Sentieon BWA-MEM output BAM
 
     ## EC2 Configuration to use ########
     ####################################
