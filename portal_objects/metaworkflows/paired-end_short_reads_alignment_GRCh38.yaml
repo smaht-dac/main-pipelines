@@ -3,7 +3,7 @@
 #############################################################
 name: paired-end_short_reads_alignment_GRCh38
 description: Pipeline to align paired-end short reads data for a single sample. |
-             Run BWA-MEM for alignment, incorporate read groups, |
+             Run Sentieon BWA-MEM for alignment, incorporate read groups, |
              mark duplicate reads, and recalibrate base and indel scores. |
              The output is an analysis-ready file in BAM format. |
              Build hg38/GRCh38
