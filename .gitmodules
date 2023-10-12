@@ -7,3 +7,6 @@
 [submodule "sentieon-pipelines"]
 	path = sentieon-pipelines
 	url = https://github.com/smaht-dac/sentieon-pipelines
+[submodule "alignment-pipelines"]
+	path = alignment-pipelines
+	url = https://github.com/smaht-dac/alignment-pipelines
