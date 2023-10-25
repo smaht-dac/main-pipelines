@@ -1,8 +1,8 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: long_reads_alignment_GRCh38
-description: Run Sentieon minimap2 to align input FASTQ files. |
+name: hifi_long_reads_alignment_GRCh38
+description: Run pbmm2 to align unaligned BAM files from PacBio HiFi. |
              Sort the alignment BAM files by coordinates. |
              Build hg38/GRCh38
 
@@ -13,8 +13,8 @@ description: Run Sentieon minimap2 to align input FASTQ files. |
 input:
 
   # Required file arguments
-  input_files_fastq_gz:
-    argument_type: file.fastq
+  input_files_bam:
+    argument_type: file.bam
     dimensionality: 1
 
   genome_reference_fasta:
@@ -22,19 +22,15 @@ input:
     files:
       - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
 
-  # Required parameter argument
-  preset:
-    argument_type: parameter.string
-
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
 workflows:
 
   ## Workflow definition #####################
-  #  sentieon_minimap2_sort
+  #  pbmm2
   ############################################
-  sentieon_minimap2_sort:
+  pbmm2:
 
     ## Lock version ####################
     ####################################
@@ -44,17 +40,21 @@ workflows:
     ####################################
     input:
 
-      input_file_fastq_gz:
-        argument_type: file.fastq
-        source_argument_name: input_files_fastq_gz
+      input_file_reads:
+        argument_type: file.bam
+        source_argument_name: input_files_bam
         scatter: 1
 
       genome_reference_fasta:
         argument_type: file.fa
 
-      # Required parameter argument
-      preset:
+      nthreads_sorting:
+        argument_type: parameter.integer
+        value: '4'
+
+      memory_sorting:
         argument_type: parameter.string
+        value: '4G'
 
     ## Output ##############################
     #     Output files for the workflow
@@ -63,7 +63,7 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: minimap2 output BAM
+        file_type: pbmm2 output BAM
 
     ## EC2 Configuration to use ########
     ####################################
@@ -83,5 +83,5 @@ workflows:
       ebs_size: "6x"
       EBS_optimized: True
       spot_instance: True
-      run_name: run_sentieon_minimap2_sort
+      run_name: run_pbmm2
       behavior_on_capacity_limit: wait_and_retry
