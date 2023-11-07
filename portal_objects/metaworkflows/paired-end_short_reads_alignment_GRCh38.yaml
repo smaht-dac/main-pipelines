@@ -8,6 +8,9 @@ description: Pipeline to align paired-end short reads data for a single sample. 
              The output is an analysis-ready file in BAM format. |
              Build hg38/GRCh38
 
+category:
+  - Alignment
+
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments
 #       define all arguments for the pipeline here
@@ -16,11 +19,11 @@ input:
 
   # File arguments
   input_files_r1_fastq_gz:
-    argument_type: file.fastq
+    argument_type: file.fastq_gz
     dimensionality: 1
 
   input_files_r2_fastq_gz:
-    argument_type: file.fastq
+    argument_type: file.fastq_gz
     dimensionality: 1
 
   genome_reference_fasta:
@@ -70,12 +73,12 @@ workflows:
 
       # File argument
       input_file_r1_fastq_gz:
-        argument_type: file.fastq
+        argument_type: file.fastq_gz
         source_argument_name: input_files_r1_fastq_gz
         scatter: 1
 
       input_file_r2_fastq_gz:
-        argument_type: file.fastq
+        argument_type: file.fastq_gz
         source_argument_name: input_files_r2_fastq_gz
         scatter: 1
 
@@ -92,7 +95,11 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: BWA-MEM output BAM
+        description: BWA-MEM output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
 
     ## EC2 Configuration to use ########
     ####################################
@@ -112,7 +119,7 @@ workflows:
       ebs_size: "4x"
       ebs_iops: 16000
       ebs_throughput: 1000
-      EBS_optimized: True
+      ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_bwa-mem_sort
       behavior_on_capacity_limit: wait_and_retry
@@ -145,7 +152,7 @@ workflows:
 
       nthreads:
         argument_type: parameter.integer
-        value: "4"
+        value: 4
 
     ## Output ##########################
     #     Output files for the workflow
@@ -154,7 +161,11 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: AddReadGroups output BAM
+        description: AddReadGroups output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
 
     ## EC2 Configuration to use ########
     ####################################
@@ -163,7 +174,7 @@ workflows:
         - m5.xlarge
         - c5.xlarge
       ebs_size: "3.5x"
-      EBS_optimized: True
+      ebs_optimized: True
       spot_instance: True
       run_name: run_AddReadGroups
       behavior_on_capacity_limit: wait_and_retry
@@ -191,7 +202,7 @@ workflows:
       # Parameter argument
       nthreads:
         argument_type: parameter.integer
-        value: "4"
+        value: 4
 
     ## Output ##########################
     #     Output files for the workflow
@@ -200,7 +211,11 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: samtools merge output BAM
+        description: samtools merge output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
 
     ## EC2 Configuration to use ########
     ####################################
@@ -211,7 +226,7 @@ workflows:
       ebs_size: "3x"
       ebs_iops: 16000
       ebs_throughput: 1000
-      EBS_optimized: True
+      ebs_optimized: True
       spot_instance: False
       run_name: run_samtools_merge
       behavior_on_capacity_limit: wait_and_retry
@@ -242,7 +257,11 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: sentieon Dedup output BAM
+        description: sentieon Dedup output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
 
     ## EC2 Configuration to use ########
     ####################################
@@ -259,7 +278,7 @@ workflows:
       ebs_size: "3x"
       ebs_iops: 16000
       ebs_throughput: 1000
-      EBS_optimized: True
+      ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_Dedup
       behavior_on_capacity_limit: wait_and_retry
@@ -299,9 +318,11 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: analysis-ready BAM
-        linkto_location:
-          - Sample
+        description: analysis-ready BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
 
     ## EC2 Configuration to use ########
     ####################################
@@ -318,7 +339,7 @@ workflows:
       ebs_size: "5x"
       ebs_iops: 16000
       ebs_throughput: 1000
-      EBS_optimized: True
+      ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_QualCal
       behavior_on_capacity_limit: wait_and_retry
