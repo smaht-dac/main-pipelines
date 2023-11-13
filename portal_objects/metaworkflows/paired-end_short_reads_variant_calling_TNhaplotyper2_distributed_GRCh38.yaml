@@ -1,7 +1,7 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: TNhaplotyper2_tumor_only_distributed
+name: paired-end_short_reads_variant_calling_TNhaplotyper2_distributed_GRCh38
 description: Run Sentieon TNhaplotyper2 (Mutect2) algorithm for tumor only. |
              Require a file with population allele frequencies in VCF format. |
              Accept a list of BAM files and produce raw calls in VCF format. |
@@ -50,9 +50,9 @@ input:
 workflows:
 
   ## Workflow definition #####################
-  #  TNhaplotyper2_tumor_only_distributed
+  #  sentieon_TNhaplotyper2
   ############################################
-  TNhaplotyper2_tumor_only_distributed:
+  sentieon_TNhaplotyper2:
 
     ## Lock version ####################
     ####################################
@@ -129,7 +129,7 @@ workflows:
       #   for the final file with the calls per shards
       ebs_optimized: True
       spot_instance: True
-      run_name: run_TNhaplotyper2_tumor_only_distributed
+      run_name: run_sentieon_TNhaplotyper2
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
@@ -148,6 +148,7 @@ workflows:
       # File arguments
       input_files_vcf_gz:
         argument_type: file.vcf_gz
+        source: sentieon_TNhaplotyper2
         gather: 1
 
       # Parameter arguments
