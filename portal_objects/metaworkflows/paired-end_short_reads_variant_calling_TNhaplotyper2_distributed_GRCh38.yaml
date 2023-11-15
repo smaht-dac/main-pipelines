@@ -105,9 +105,9 @@ workflows:
           - Variant Calls
         data_type:
           - Somatic Variant Calls
-        variant_types:
-          - Single Nucleotide Variants
-          - Small Insertions-Deletions
+        variant_type:
+          - Single Nucleotide Variant
+          - Insertion-deletion
 
     ## EC2 Configuration to use ########
     ####################################
@@ -164,9 +164,9 @@ workflows:
           - Variant Calls
         data_type:
           - Somatic Variant Calls
-        variant_types:
-          - Single Nucleotide Variants
-          - Small Insertions-Deletions
+        variant_type:
+          - Single Nucleotide Variant
+          - Insertion-deletion
 
     ## EC2 Configuration to use ########
     ####################################
