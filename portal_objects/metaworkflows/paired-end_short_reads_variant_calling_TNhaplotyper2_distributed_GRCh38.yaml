@@ -149,12 +149,8 @@ workflows:
       input_files_vcf_gz:
         argument_type: file.vcf_gz
         source: sentieon_TNhaplotyper2
-        gather: 1
-
-      # Parameter arguments
-      nthreads:
-        argument_type: parameter.integer
-        value: 4
+        source_argument_name: output_file_vcf_gz
+        gather_input: 1
 
     ## Output ##############################
     #     Output files for the workflow
