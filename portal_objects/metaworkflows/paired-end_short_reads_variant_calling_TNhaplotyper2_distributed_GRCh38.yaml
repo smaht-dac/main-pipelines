@@ -124,7 +124,7 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-      ebs_size: 50
+      ebs_size: "50"
       # This should be more than enough
       #   for the final file with the calls per shards
       ebs_optimized: True

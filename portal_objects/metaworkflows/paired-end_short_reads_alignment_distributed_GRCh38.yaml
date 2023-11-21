@@ -250,7 +250,7 @@ workflows:
         - r5a.4xlarge
         - r6i.4xlarge
         - r6a.4xlarge
-      ebs_size: 50
+      ebs_size: "50"
       ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_LocusCollector
@@ -378,7 +378,7 @@ workflows:
       instance_type:
         - m5.xlarge
         - c5.xlarge
-      ebs_size: 150
+      ebs_size: "150"
       # 150GB should be a good EBS size estimate per lane,
       #   if we start merging multiple lanes may need to increase
       ebs_optimized: True
