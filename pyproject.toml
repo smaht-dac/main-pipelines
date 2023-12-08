@@ -16,7 +16,7 @@ boto3 = "^1.28.62"
 awscli = "^1.29.62"
 magma-suite = "^2.0.0"
 
-portal-pipeline-utils = { path = "./smaht-pipeline-utils", develop = true }
+smaht-pipeline-utils = { path = "./smaht-pipeline-utils", develop = true }
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
