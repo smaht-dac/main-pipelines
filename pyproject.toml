@@ -2,10 +2,10 @@
 name = "main-pipelines"
 version = "0.0.1"
 description = "Main repository for deploying pipelines for the SMaHT portal."
-authors = ["Michele Berselli <berselli.michele@gmail.com>,
-            Alexander Veit,
-            Dominika Maziec,
-            SMaHT Team"]
+authors = ["Michele Berselli <berselli.michele@gmail.com>",
+            "Alexander Veit",
+            "Dominika Maziec",
+            "SMaHT Team"]
 repository = 'https://github.com/smaht-dac/main-pipelines'
 readme = "README.md"
 
