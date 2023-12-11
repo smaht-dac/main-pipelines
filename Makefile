@@ -15,7 +15,7 @@ update:
 	poetry update
 
 build:
-	poetry install
+	poetry install --no-root
 
 deploy-base:
 	scripts/check_awscred.sh
