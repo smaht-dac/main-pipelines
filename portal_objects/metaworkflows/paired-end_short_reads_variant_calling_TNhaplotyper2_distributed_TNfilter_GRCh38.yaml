@@ -179,6 +179,13 @@ workflows:
         source_argument_name: output_file_contamination
         gather_input: 1
 
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter arguments
+      sample_name:
+        argument_type: parameter.string
+
     ## Output ##############################
     #     Output files for the workflow
     ########################################
