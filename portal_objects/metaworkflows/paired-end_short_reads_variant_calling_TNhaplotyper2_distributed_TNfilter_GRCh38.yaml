@@ -1,7 +1,7 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: paired-end_short_reads_variant_calling_TNhaplotyper2_distributed_wfilter_GRCh38
+name: paired-end_short_reads_variant_calling_TNhaplotyper2_distributed_TNfilter_GRCh38
 description: Run Sentieon TNhaplotyper2 (Mutect2) algorithm for tumor only. |
              Run Sentieon TNfilter (FilterMutectCalls) algorithm for tumor only. |
              Require a file with population allele frequencies in VCF format. |
