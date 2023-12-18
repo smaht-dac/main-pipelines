@@ -14,7 +14,7 @@ python = ">=3.8,<3.12"
 dcicutils = "^8.0.0"
 boto3 = "^1.28.62"
 awscli = "^1.29.62"
-magma-suite = ">=3.0.0"
+magma-suite = "^3.0.0"
 
 smaht-pipeline-utils = { path = "./smaht-pipeline-utils", develop = true }
 
