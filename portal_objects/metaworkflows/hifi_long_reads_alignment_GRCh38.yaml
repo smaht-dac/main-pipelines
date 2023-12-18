@@ -25,6 +25,10 @@ input:
     files:
       - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
 
+  # Required parameter argument
+  sample_name:
+    argument_type: parameter.string
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -50,6 +54,9 @@ workflows:
 
       genome_reference_fasta:
         argument_type: file.fa
+
+      sample_name:
+        argument_type: parameter.string
 
       nthreads_sorting:
         argument_type: parameter.integer
