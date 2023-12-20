@@ -29,6 +29,9 @@ input:
   sample_name:
     argument_type: parameter.string
 
+  library_id:
+    argument_type: parameter.string
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -54,9 +57,6 @@ workflows:
 
       genome_reference_fasta:
         argument_type: file.fa
-
-      sample_name:
-        argument_type: parameter.string
 
       nthreads_sorting:
         argument_type: parameter.integer
@@ -98,4 +98,55 @@ workflows:
       ebs_optimized: True
       spot_instance: True
       run_name: run_pbmm2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   ReplaceReadGroups
+  ############################################
+  ReplaceReadGroups:
+
+    ## Lock version ####################
+    ####################################
+    version: 0.0.1
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: pbmm2
+        source_argument_name: output_file_bam
+
+      # Parameter argument
+      sample_name:
+        argument_type: parameter.string
+
+      library_id:
+        argument_type: parameter.string
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: ReplaceReadGroups output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.xlarge
+        - c5.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_ReplaceReadGroups
       behavior_on_capacity_limit: wait_and_retry
