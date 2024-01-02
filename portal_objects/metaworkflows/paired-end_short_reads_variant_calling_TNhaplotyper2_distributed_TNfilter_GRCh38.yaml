@@ -1,0 +1,219 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: paired-end_short_reads_variant_calling_TNhaplotyper2_distributed_TNfilter_GRCh38
+description: Run Sentieon TNhaplotyper2 (Mutect2) algorithm for tumor only. |
+             Run Sentieon TNfilter (FilterMutectCalls) algorithm for tumor only. |
+             Require a file with population allele frequencies in VCF format. |
+             Accept a list of BAM files and produce raw calls in VCF format. |
+             Implemented to run on shards in distributed mode
+
+category:
+  - Variant Calling
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File arguments
+  input_files_bam:
+    argument_type: file.bam
+    dimensionality: 1
+
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  population_allele_frequencies:
+    argument_type: file.vcf_gz
+    files:
+      - af-only-gnomad-mutect2@GRCh38
+
+  shards_file:
+    argument_type: file.txt
+    files:
+      - regions-50M-62shards@GCA_000001405.15_GRCh38_no_decoy
+
+  # Parameter arguments
+  sample_name:
+    argument_type: parameter.string
+
+  shards_index:
+    argument_type: parameter.array
+    value: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61"]
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #  sentieon_TNhaplotyper2_wOrientationBias_ContaminationModel
+  ############################################
+  sentieon_TNhaplotyper2_wOrientationBias_ContaminationModel:
+
+    ## Lock version ####################
+    ####################################
+    version: 0.0.1
+
+    ## Lock shards #####################
+    ####################################
+    shards: [['0'], ['1'], ['2'], ['3'], ['4'], ['5'], ['6'], ['7'], ['8'], ['9'], ['10'], ['11'], ['12'], ['13'], ['14'], ['15'], ['16'], ['17'], ['18'], ['19'], ['20'], ['21'], ['22'], ['23'], ['24'], ['25'], ['26'], ['27'], ['28'], ['29'], ['30'], ['31'], ['32'], ['33'], ['34'], ['35'], ['36'], ['37'], ['38'], ['39'], ['40'], ['41'], ['42'], ['43'], ['44'], ['45'], ['46'], ['47'], ['48'], ['49'], ['50'], ['51'], ['52'], ['53'], ['54'], ['55'], ['56'], ['57'], ['58'], ['59'], ['60'], ['61']]
+    # These shards structure needs to match the number of shards in shards_file and defined by shards_index
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_files_bam:
+        argument_type: file.bam
+        # Since it works by region we mount the files
+        mount: True
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      population_allele_frequencies:
+        argument_type: file.vcf_gz
+
+      # Parameter arguments
+      sample_name:
+        argument_type: parameter.string
+
+      # Regions
+      shards_file_txt:
+        argument_type: file.txt
+        source_argument_name: shards_file
+
+      shard_index:
+        argument_type: parameter.array
+        source_argument_name: shards_index
+        input_dimension: 1
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: TNhaplotyper2 output VCF (shard)
+        data_category:
+          - Variant Calls
+        data_type:
+          - Somatic Variant Calls
+        variant_type:
+          - Single Nucleotide Variant
+          - Insertion-deletion
+
+      output_file_priors:
+        description: OrientationBias output TXT (shard)
+        data_category:
+          - Variant Calls
+        data_type:
+          - Statistics
+
+      output_file_contamination:
+        description: ContaminationModel output TXT (shard)
+        data_category:
+          - Variant Calls
+        data_type:
+          - Statistics
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5n.9xlarge
+        - c5.9xlarge
+        - c5a.8xlarge
+        - c5.12xlarge
+        - c5a.12xlarge
+        - c6i.8xlarge
+        - c6i.12xlarge
+        - m6a.8xlarge
+        - m6a.12xlarge
+        - m6i.8xlarge
+        - m6i.12xlarge
+      ebs_size: 50
+      # This should be more than enough
+      #   for the final file with the calls per shards
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_sentieon_TNhaplotyper2_wOrientationBias_ContaminationModel
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #  sentieon_merge_TNfilter
+  ############################################
+  sentieon_merge_TNfilter:
+
+    ## Lock version ####################
+    ####################################
+    version: 0.0.1
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_files_vcf_gz:
+        argument_type: file.vcf_gz
+        source: sentieon_TNhaplotyper2_wOrientationBias_ContaminationModel
+        source_argument_name: output_file_vcf_gz
+        gather_input: 1
+
+      input_files_priors:
+        argument_type: file.priors
+        source: sentieon_TNhaplotyper2_wOrientationBias_ContaminationModel
+        source_argument_name: output_file_priors
+        gather_input: 1
+
+      input_files_contamination:
+        argument_type: file.contamination
+        source: sentieon_TNhaplotyper2_wOrientationBias_ContaminationModel
+        source_argument_name: output_file_contamination
+        gather_input: 1
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter arguments
+      sample_name:
+        argument_type: parameter.string
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: TNfilter output VCF
+        data_category:
+          - Variant Calls
+        data_type:
+          - Somatic Variant Calls
+        variant_type:
+          - Single Nucleotide Variant
+          - Insertion-deletion
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.9xlarge
+        - c6i.8xlarge
+        - c6a.8xlarge
+        - m6i.8xlarge
+        - m6a.8xlarge
+        - m7i.8xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_sentieon_merge_TNfilter
+      behavior_on_capacity_limit: wait_and_retry

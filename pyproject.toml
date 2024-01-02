@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "main-pipelines"
+version = "0.0.1"
+description = "Main repository for deploying pipelines for the SMaHT portal."
+authors = ["Michele Berselli <berselli.michele@gmail.com>",
+            "Alexander Veit",
+            "Dominika Maziec",
+            "SMaHT Team"]
+repository = 'https://github.com/smaht-dac/main-pipelines'
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+dcicutils = "^8.0.0"
+boto3 = "^1.28.62"
+awscli = "^1.29.62"
+magma-suite = "^3.0.0"
+
+smaht-pipeline-utils = { path = "./smaht-pipeline-utils", develop = true }
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

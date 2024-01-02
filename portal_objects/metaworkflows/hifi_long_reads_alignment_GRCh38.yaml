@@ -6,6 +6,9 @@ description: Run pbmm2 to align unaligned BAM files from PacBio HiFi. |
              Sort the alignment BAM files by coordinates. |
              Build hg38/GRCh38
 
+category:
+  - Alignment
+
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments
 #       define all arguments for the pipeline here
@@ -21,6 +24,13 @@ input:
     argument_type: file.fa
     files:
       - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  # Required parameter argument
+  sample_name:
+    argument_type: parameter.string
+
+  library_id:
+    argument_type: parameter.string
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
@@ -50,11 +60,11 @@ workflows:
 
       nthreads_sorting:
         argument_type: parameter.integer
-        value: '4'
+        value: 4
 
       memory_sorting:
         argument_type: parameter.string
-        value: '4G'
+        value: "4G"
 
     ## Output ##############################
     #     Output files for the workflow
@@ -63,7 +73,11 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: pbmm2 output BAM
+        description: pbmm2 output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
 
     ## EC2 Configuration to use ########
     ####################################
@@ -80,8 +94,59 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-      ebs_size: "6x"
-      EBS_optimized: True
+      ebs_size: "4.5x"
+      ebs_optimized: True
       spot_instance: True
       run_name: run_pbmm2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   ReplaceReadGroups
+  ############################################
+  ReplaceReadGroups:
+
+    ## Lock version ####################
+    ####################################
+    version: 0.0.1
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: pbmm2
+        source_argument_name: output_file_bam
+
+      # Parameter argument
+      sample_name:
+        argument_type: parameter.string
+
+      library_id:
+        argument_type: parameter.string
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: ReplaceReadGroups output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.xlarge
+        - c5.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_ReplaceReadGroups
       behavior_on_capacity_limit: wait_and_retry

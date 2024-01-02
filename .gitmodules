@@ -10,3 +10,6 @@
 [submodule "alignment-pipelines"]
 	path = alignment-pipelines
 	url = https://github.com/smaht-dac/alignment-pipelines
+[submodule "smaht-pipeline-utils"]
+	path = smaht-pipeline-utils
+	url = https://github.com/smaht-dac/smaht-pipeline-utils

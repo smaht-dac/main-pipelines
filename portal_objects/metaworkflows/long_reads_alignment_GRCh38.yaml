@@ -6,6 +6,9 @@ description: Run Sentieon minimap2 to align input FASTQ files. |
              Sort the alignment BAM files by coordinates. |
              Build hg38/GRCh38
 
+category:
+  - Alignment
+
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments
 #       define all arguments for the pipeline here
@@ -14,7 +17,7 @@ input:
 
   # Required file arguments
   input_files_fastq_gz:
-    argument_type: file.fastq
+    argument_type: file.fastq_gz
     dimensionality: 1
 
   genome_reference_fasta:
@@ -45,7 +48,7 @@ workflows:
     input:
 
       input_file_fastq_gz:
-        argument_type: file.fastq
+        argument_type: file.fastq_gz
         source_argument_name: input_files_fastq_gz
         scatter: 1
 
@@ -63,7 +66,11 @@ workflows:
 
       # File output
       output_file_bam:
-        file_type: minimap2 output BAM
+        description: minimap2 output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
 
     ## EC2 Configuration to use ########
     ####################################
@@ -80,8 +87,8 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-      ebs_size: "6x"
-      EBS_optimized: True
+      ebs_size: "4.5x"
+      ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_minimap2_sort
       behavior_on_capacity_limit: wait_and_retry
