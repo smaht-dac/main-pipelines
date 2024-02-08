@@ -88,18 +88,15 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5n.9xlarge
-        - c5.9xlarge
-        - c5a.8xlarge
-        - c5.12xlarge
-        - c5a.12xlarge
-        - c6i.8xlarge
-        - c6i.12xlarge
         - m6a.8xlarge
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-      ebs_size: "4.5x"
+        - m7a.8xlarge
+        - m7a.12xlarge
+        - m7i.8xlarge
+        - m7i.12xlarge
+      ebs_size: "4x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_minimap2_sort
@@ -127,6 +124,7 @@ workflows:
       methyl_file_bam:
         argument_type: file.bam
         source_argument_name: input_files_bam
+        input_dimension: 1
 
       # Parameter argument
       nthreads:
@@ -179,6 +177,7 @@ workflows:
       input_file_bam:
         argument_type: file.bam
         source_argument_name: input_files_bam
+        input_dimension: 1
 
       # Parameter argument
       sample_name:
