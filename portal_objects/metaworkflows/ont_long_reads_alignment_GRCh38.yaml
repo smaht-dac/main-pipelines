@@ -128,7 +128,7 @@ workflows:
 
       # Parameter argument
       nthreads:
-        argument_type: parameter.string
+        argument_type: parameter.integer
         value: 4
 
     ## Output ##########################
