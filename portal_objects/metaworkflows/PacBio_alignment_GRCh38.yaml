@@ -1,10 +1,10 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: ont_long_reads_alignment_GRCh38
-description: Run Sentieon minimap2 to align input FASTQ files from Oxford Nanopore Technology. |
-             Link methyl tags and read groups from corresponding unaligned input BAM files. |
+name: hifi_long_reads_alignment_merge_GRCh38
+description: Run pbmm2 to align unaligned BAM files from PacBio HiFi. |
              Sort the alignment BAM files by coordinates. |
+             Merge the aligned BAM files. |
              Build hg38/GRCh38
 
 category:
@@ -17,10 +17,6 @@ category:
 input:
 
   # Required file arguments
-  input_files_fastq_gz:
-    argument_type: file.fastq_gz
-    dimensionality: 1
-
   input_files_bam:
     argument_type: file.bam
     dimensionality: 1
@@ -37,19 +33,15 @@ input:
   library_id:
     argument_type: parameter.string
 
-  preset:
-    argument_type: parameter.string
-    value: "map-ont"
-
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
 workflows:
 
   ## Workflow definition #####################
-  #  sentieon_minimap2_sort
+  #  pbmm2
   ############################################
-  sentieon_minimap2_sort:
+  pbmm2:
 
     ## Lock version ####################
     ####################################
@@ -59,17 +51,21 @@ workflows:
     ####################################
     input:
 
-      input_file_fastq_gz:
-        argument_type: file.fastq_gz
-        source_argument_name: input_files_fastq_gz
+      input_file_reads:
+        argument_type: file.bam
+        source_argument_name: input_files_bam
         scatter: 1
 
       genome_reference_fasta:
         argument_type: file.fa
 
-      # Required parameter argument
-      preset:
+      nthreads_sorting:
+        argument_type: parameter.integer
+        value: 4
+
+      memory_sorting:
         argument_type: parameter.string
+        value: "4G"
 
     ## Output ##############################
     #     Output files for the workflow
@@ -78,7 +74,7 @@ workflows:
 
       # File output
       output_file_bam:
-        description: minimap2 output BAM
+        description: pbmm2 output BAM
         data_category:
           - Sequencing Reads
         data_type:
@@ -88,24 +84,27 @@ workflows:
     ####################################
     config:
       instance_type:
+        - c5n.9xlarge
+        - c5.9xlarge
+        - c5a.8xlarge
+        - c5.12xlarge
+        - c5a.12xlarge
+        - c6i.8xlarge
+        - c6i.12xlarge
         - m6a.8xlarge
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
-        # - m7a.8xlarge
-        # - m7a.12xlarge
-        # - m7i.8xlarge
-        # - m7i.12xlarge
-      ebs_size: "4x"
+      ebs_size: "4.5x"
       ebs_optimized: True
       spot_instance: True
-      run_name: run_sentieon_minimap2_sort
+      run_name: run_pbmm2
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  #   methylink
+  #   ReplaceReadGroups
   ############################################
-  methylink:
+  ReplaceReadGroups:
 
     ## Lock version ####################
     ####################################
@@ -118,66 +117,8 @@ workflows:
       # File argument
       input_file_bam:
         argument_type: file.bam
-        source: sentieon_minimap2_sort
+        source: pbmm2
         source_argument_name: output_file_bam
-
-      methyl_file_bam:
-        argument_type: file.bam
-        source_argument_name: input_files_bam
-        input_dimension: 1
-
-      # Parameter argument
-      nthreads:
-        argument_type: parameter.integer
-        value: 4
-
-    ## Output ##########################
-    #     Output files for the workflow
-    ####################################
-    output:
-
-      # File output
-      output_file_bam:
-        description: methylink output BAM
-        data_category:
-          - Sequencing Reads
-        data_type:
-          - Aligned Reads
-
-    ## EC2 Configuration to use ########
-    ####################################
-    config:
-      instance_type:
-        - t3.xlarge
-      ebs_size: "3.5x"
-      ebs_optimized: True
-      spot_instance: True
-      run_name: run_methylink
-      behavior_on_capacity_limit: wait_and_retry
-
-  ## Workflow definition #####################
-  #   ImportReadGroups_methylink
-  ############################################
-  ImportReadGroups_methylink:
-
-    ## Lock version ####################
-    ####################################
-    version: 0.0.1
-
-    ## Specific arguments ##############
-    ####################################
-    input:
-
-      # File argument
-      target_file_bam:
-        argument_type: file.bam
-        source: methylink
-        source_argument_name: output_file_bam
-
-      input_file_bam:
-        argument_type: file.bam
-        source_argument_name: input_files_bam
-        input_dimension: 1
 
       # Parameter argument
       sample_name:
@@ -193,7 +134,7 @@ workflows:
 
       # File output
       output_file_bam:
-        description: ImportReadGroups_methylink output BAM
+        description: ReplaceReadGroups output BAM
         data_category:
           - Sequencing Reads
         data_type:
@@ -208,7 +149,7 @@ workflows:
       ebs_size: "2.5x"
       ebs_optimized: True
       spot_instance: True
-      run_name: run_ImportReadGroups_methylink
+      run_name: run_ReplaceReadGroups
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
@@ -227,7 +168,7 @@ workflows:
       # File argument
       input_files_bam:
         argument_type: file.bam
-        source: ImportReadGroups_methylink
+        source: ReplaceReadGroups
         source_argument_name: output_file_bam
         gather: 1
 
