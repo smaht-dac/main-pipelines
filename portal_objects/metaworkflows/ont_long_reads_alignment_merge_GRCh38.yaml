@@ -1,7 +1,7 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: ont_long_reads_alignment_GRCh38
+name: ont_long_reads_alignment_merge_GRCh38
 description: Run Sentieon minimap2 to align input FASTQ files from Oxford Nanopore Technology. |
              Link methyl tags and read groups from corresponding unaligned input BAM files. |
              Sort the alignment BAM files by coordinates. |
@@ -59,6 +59,7 @@ workflows:
     ####################################
     input:
 
+      # File argument
       input_file_fastq_gz:
         argument_type: file.fastq_gz
         source_argument_name: input_files_fastq_gz
@@ -83,6 +84,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -143,6 +145,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -198,6 +201,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -212,7 +216,7 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # samtools_merge
+  #   samtools_merge
   ############################################
   samtools_merge:
 
@@ -248,6 +252,12 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software: smaht:Software-Sentieon_minimap2_202308.01
+        alignment_details:
+          - Sorted
+        reference_genome: GRCh38
 
     ## EC2 Configuration to use ########
     ####################################

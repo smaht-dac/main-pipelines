@@ -50,6 +50,7 @@ workflows:
     ####################################
     input:
 
+      # File argument
       input_file_reads:
         argument_type: file.bam
         source_argument_name: input_files_bam
@@ -58,6 +59,7 @@ workflows:
       genome_reference_fasta:
         argument_type: file.fa
 
+      # Parameter argument
       nthreads_sorting:
         argument_type: parameter.integer
         value: 4
@@ -78,6 +80,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -138,6 +141,12 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software: smaht:Software-pbmm2_1.13.0
+        alignment_details:
+          - Sorted
+        reference_genome: GRCh38
 
     ## EC2 Configuration to use ########
     ####################################

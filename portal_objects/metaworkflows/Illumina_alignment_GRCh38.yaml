@@ -1,7 +1,7 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: paired-end_short_reads_alignment_distributed_GRCh38
+name: Illumina_alignment_GRCh38
 description: Pipeline to align paired-end short reads data for a single sample. |
              Run Sentieon BWA-MEM for alignment, incorporate read groups, |
              mark duplicate reads, and recalibrate base and indel scores. |
@@ -65,15 +65,128 @@ input:
   library_id:
     argument_type: parameter.string
 
+  length_required:
+    # Reads shorter than length_required will be discarded
+    argument_type: parameter.integer
+
   shards_index:
     # These indexes need to match the number of shards in shards_file
     argument_type: parameter.array
     value: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
 
+  read_length:
+    argument_type: parameter.integer
+    value: 150
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
 workflows:
+
+## Pre-processing ###########################################
+#     Steps to pre-process input files
+#       for alignment
+#############################################################
+
+  ## Workflow definition #####################
+  #   fastp_paired-end
+  ############################################
+  fastp_paired-end:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_r1_fastq_gz:
+        argument_type: file.fastq_gz
+        source_argument_name: input_files_r1_fastq_gz
+        scatter: 1
+
+      input_file_r2_fastq_gz:
+        argument_type: file.fastq_gz
+        source_argument_name: input_files_r2_fastq_gz
+        scatter: 1
+
+      # Parameter argument
+      trim_poly_g:
+        # Force polyG tail trimming
+        argument_type: parameter.boolean
+        value: True
+
+      disable_quality_filtering:
+        # If this option is specified, quality filtering is disabled
+        argument_type: parameter.boolean
+        value: True
+
+      disable_adapter_trimming:
+        # If this option is specified, adapter trimming is disabled
+        argument_type: parameter.boolean
+        value: True
+
+      length_required:
+        argument_type: parameter.integer
+
+      nthreads:
+        argument_type: parameter.integer
+        value: 16
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_r1_fastq_gz:
+        description: fastp pre-processed FASTQ
+        read_pair_number: "R1"
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+        output_status: Final Output
+
+      output_file_r2_fastq_gz:
+        description: fastp pre-processed FASTQ
+        read_pair_number: "R2"
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+        output_status: Final Output
+
+      output_file_json:
+        description: fastp summary JSON
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+
+      output_file_failed_fastq_gz:
+        description: fastp failed reads FASTQ
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.2xlarge
+        - m5.2xlarge
+        - m6i.2xlarge
+        - m6a.2xlarge
+      ebs_size: "3x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_fastp_paired-end
+      behavior_on_capacity_limit: wait_and_retry
+
+## Alignment ################################################
+#     Alignment and post-processing steps
+#       to generate the final output
+#############################################################
 
   ## Workflow definition #####################
   #   sentieon_bwa-mem_sort
@@ -91,13 +204,13 @@ workflows:
       # File argument
       input_file_r1_fastq_gz:
         argument_type: file.fastq_gz
-        source_argument_name: input_files_r1_fastq_gz
-        scatter: 1
+        source: fastp_paired-end
+        source_argument_name: output_file_r1_fastq_gz
 
       input_file_r2_fastq_gz:
         argument_type: file.fastq_gz
-        source_argument_name: input_files_r2_fastq_gz
-        scatter: 1
+        source: fastp_paired-end
+        source_argument_name: output_file_r2_fastq_gz
 
       genome_reference_fasta:
         argument_type: file.fa
@@ -117,6 +230,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -176,6 +290,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -237,7 +352,8 @@ workflows:
         data_category:
           - Sequencing Reads
         data_type:
-          - Aligned Reads
+          - Statistics
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -313,6 +429,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -331,7 +448,7 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # shards_to_ReadGroups
+  #   shards_to_ReadGroups
   ############################################
   shards_to_ReadGroups:
 
@@ -371,6 +488,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -426,6 +544,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -444,7 +563,7 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # samtools_merge
+  #   samtools_merge
   ############################################
   samtools_merge:
 
@@ -480,6 +599,12 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software: smaht:Software-Sentieon_BWA-MEM_202308.01
+        alignment_details:
+          - Sorted
+        reference_genome: GRCh38
 
     ## EC2 Configuration to use ########
     ####################################
@@ -493,4 +618,604 @@ workflows:
       ebs_optimized: True
       spot_instance: False
       run_name: run_samtools_merge
+      behavior_on_capacity_limit: wait_and_retry
+
+## Quality Controls #########################################
+#     Steps to calculate quality metrics for
+#       the final output
+#############################################################
+
+  ## Workflow definition #####################
+  ############################################
+  samtools_stats:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      # Parameter argument
+      nthreads:
+        argument_type: parameter.integer
+        value: 2
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: samtools stats output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_samtools_stats
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  samtools_flagstat:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      # Parameter argument
+      nthreads:
+        argument_type: parameter.integer
+        value: 2
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: samtools flagstat output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_samtools_flagstat
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  samtools_idxstats:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: samtools idxstats output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - t3.small
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_samtools_idxstats
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  picard_CollectAlignmentSummaryMetrics:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: picard CollectAlignmentSummaryMetrics output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_picard_CollectAlignmentSummaryMetrics
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  picard_CollectBaseDistributionByCycle:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: picard CollectBaseDistributionByCycle output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_chart_pdf:
+        description: picard CollectBaseDistributionByCycle output PDF
+        data_category:
+          - Quality Control
+        data_type:
+          - Image
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_picard_CollectBaseDistributionByCycle
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  picard_CollectGcBiasMetrics:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: picard CollectGcBiasMetrics output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_summary_txt:
+        description: picard CollectGcBiasMetrics summary TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_chart_pdf:
+        description: picard CollectGcBiasMetrics output PDF
+        data_category:
+          - Quality Control
+        data_type:
+          - Image
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_picard_CollectGcBiasMetrics
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  picard_CollectInsertSizeMetrics:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: picard CollectInsertSizeMetrics output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_histogram_pdf:
+        description: picard CollectInsertSizeMetrics output PDF
+        data_category:
+          - Quality Control
+        data_type:
+          - Image
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_picard_CollectInsertSizeMetrics
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  picard_CollectWgsMetrics:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter argument
+      read_length:
+        argument_type: parameter.integer
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: picard CollectWgsMetrics output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - r5.2xlarge
+        - r5n.2xlarge
+        - r5a.2xlarge
+        - r6i.2xlarge
+        - r6a.2xlarge
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: False
+      run_name: run_picard_CollectWgsMetrics
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  picard_MeanQualityByCycle:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: picard MeanQualityByCycle output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_chart_pdf:
+        description: picard MeanQualityByCycle output PDF
+        data_category:
+          - Quality Control
+        data_type:
+          - Image
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_picard_MeanQualityByCycle
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  bamstats:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: bamstats output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_bamstats
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   parse-qc_BAM_Quality_Metrics_paired-end
+  ############################################
+  parse-qc_BAM_Quality_Metrics_paired-end:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+        mount: True
+        # this file is actually not used by the code but is needed
+        #   to specify where the quality metrics object need to be linked
+
+      SAMTOOLS_stats_OUTPUT:
+        argument_type: file.txt
+        source: samtools_stats
+        source_argument_name: output_file_txt
+
+      SAMTOOLS_flagstat_OUTPUT:
+        argument_type: file.txt
+        source: samtools_flagstat
+        source_argument_name: output_file_txt
+
+      SAMTOOLS_idxstats_OUTPUT:
+        argument_type: file.txt
+        source: samtools_idxstats
+        source_argument_name: output_file_txt
+
+      PICARD_CollectAlignmentSummaryMetrics_OUTPUT:
+        argument_type: file.txt
+        source: picard_CollectAlignmentSummaryMetrics
+        source_argument_name: output_file_txt
+
+      PICARD_CollectBaseDistributionByCycle_OUTPUT:
+        argument_type: file.txt
+        source: picard_CollectBaseDistributionByCycle
+        source_argument_name: output_file_txt
+
+      PICARD_CollectBaseDistributionByCycle_PDF:
+        argument_type: file.pdf
+        source: picard_CollectBaseDistributionByCycle
+        source_argument_name: output_chart_pdf
+
+      PICARD_CollectGcBiasMetrics_OUTPUT:
+        argument_type: file.txt
+        source: picard_CollectGcBiasMetrics
+        source_argument_name: output_file_txt
+
+      PICARD_CollectGcBiasMetrics_SUMMARY:
+        argument_type: file.txt
+        source: picard_CollectGcBiasMetrics
+        source_argument_name: output_summary_txt
+
+      PICARD_CollectGcBiasMetrics_PDF:
+        argument_type: file.pdf
+        source: picard_CollectGcBiasMetrics
+        source_argument_name: output_chart_pdf
+
+      PICARD_CollectInsertSizeMetrics_OUTPUT:
+        argument_type: file.txt
+        source: picard_CollectInsertSizeMetrics
+        source_argument_name: output_file_txt
+
+      PICARD_CollectInsertSizeMetrics_PDF:
+        argument_type: file.pdf
+        source: picard_CollectInsertSizeMetrics
+        source_argument_name: output_histogram_pdf
+
+      PICARD_CollectWgsMetrics_OUTPUT:
+        argument_type: file.txt
+        source: picard_CollectWgsMetrics
+        source_argument_name: output_file_txt
+
+      PICARD_MeanQualityByCycle_OUTPUT:
+        argument_type: file.txt
+        source: picard_MeanQualityByCycle
+        source_argument_name: output_file_txt
+
+      PICARD_MeanQualityByCycle_PDF:
+        argument_type: file.pdf
+        source: picard_MeanQualityByCycle
+        source_argument_name: output_chart_pdf
+
+      BAMSTATS_OUTPUT:
+        argument_type: file.txt
+        source: bamstats
+        source_argument_name: output_file_txt
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      qc_values_json:
+        description: QC output JSON
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+
+      metrics_zip:
+        description: QC compressed output
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+          - Image
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - t3.small
+      ebs_size: 10
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_parse-qc_BAM_Quality_Metrics_paired-end
       behavior_on_capacity_limit: wait_and_retry
