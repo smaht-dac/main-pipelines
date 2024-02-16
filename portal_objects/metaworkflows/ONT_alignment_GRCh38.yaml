@@ -2,9 +2,13 @@
 #     General information for the pipeline
 #############################################################
 name: ONT_alignment_GRCh38
-description: Run Sentieon minimap2 to align input FASTQ files from Oxford Nanopore Technology. |
+description: End-to-end alignment pipeline for Oxford Nanopore Technology. |
+             Run Sentieon minimap2 to align input FASTQ files. |
              Link methyl tags and read groups from corresponding unaligned input BAM files. |
              Sort the alignment BAM files by coordinates. |
+             Merge the aligned BAM files. |
+             Calculate quality metrics. |
+             Implemented to run per single sample and library. |
              Build hg38/GRCh38
 
 category:

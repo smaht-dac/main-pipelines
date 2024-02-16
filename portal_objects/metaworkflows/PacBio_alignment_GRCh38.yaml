@@ -2,9 +2,12 @@
 #     General information for the pipeline
 #############################################################
 name: PacBio_alignment_GRCh38
-description: Run pbmm2 to align unaligned BAM files from PacBio HiFi. |
+description: End-to-end alignment pipeline for PacBio data. |
+             Run pbmm2 to align unaligned input BAM files. |
              Sort the alignment BAM files by coordinates. |
              Merge the aligned BAM files. |
+             Calculate quality metrics. |
+             Implemented to run per single sample and library. |
              Build hg38/GRCh38
 
 category:
