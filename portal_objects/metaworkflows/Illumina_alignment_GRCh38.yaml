@@ -605,7 +605,8 @@ workflows:
           - Aligned Reads
         output_status: Final Output
         # These fields are required to link metadata for the naming
-        software: smaht:Software-Sentieon_BWA-MEM_202308.01
+        software:
+          - smaht:Software-Sentieon_BWA-MEM_202308.01
         alignment_details:
           - Sorted
         reference_genome: GRCh38

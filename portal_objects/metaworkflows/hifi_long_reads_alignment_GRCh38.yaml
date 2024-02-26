@@ -143,7 +143,8 @@ workflows:
           - Aligned Reads
         output_status: Final Output
         # These fields are required to link metadata for the naming
-        software: smaht:Software-pbmm2_1.13.0
+        software:
+          - smaht:Software-pbmm2_1.13.0
         alignment_details:
           - Sorted
         reference_genome: GRCh38
