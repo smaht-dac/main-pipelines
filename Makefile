@@ -29,6 +29,7 @@ deploy-base:
 		--post-software \
 		--post-file-format \
 		--post-file-reference \
+		--post-reference-genome \
 		--post-workflow \
 		--post-metaworkflow \
 		--post-wfl \
@@ -48,6 +49,7 @@ deploy-all:
 		--post-software \
 		--post-file-format \
 		--post-file-reference \
+		--post-reference-genome \
 		--post-workflow \
 		--post-metaworkflow \
 		--post-wfl \
