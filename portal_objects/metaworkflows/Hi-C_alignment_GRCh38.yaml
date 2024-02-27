@@ -5,10 +5,12 @@ name: Hi-C_alignment_GRCh38
 description: Pipeline to align paired-end Illumina Hi-C data. |
              Run Sentieon BWA-MEM for alignment, and incorporate read groups. |
              Implemented to run per single sample and library. |
+             Calculate quality metrics. |
              Build hg38/GRCh38
 
 category:
   - Alignment
+  - Quality Control
 
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments

@@ -13,6 +13,7 @@ description: End-to-end alignment pipeline for Oxford Nanopore Technology. |
 
 category:
   - Alignment
+  - Quality Control
 
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments

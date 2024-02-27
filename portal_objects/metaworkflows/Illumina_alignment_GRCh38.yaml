@@ -14,7 +14,9 @@ description: End-to-end alignment pipeline for paired-end Illumina data. |
              Build hg38/GRCh38
 
 category:
+  - Read Manipulation
   - Alignment
+  - Quality Control
 
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments
