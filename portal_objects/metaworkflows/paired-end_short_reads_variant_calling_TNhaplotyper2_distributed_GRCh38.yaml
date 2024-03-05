@@ -100,14 +100,13 @@ workflows:
 
       # File output
       output_file_vcf_gz:
-        description: TNhaplotyper2 output VCF (shard)
+        description: sentieon TNhaplotyper2 output VCF (shard)
         data_category:
-          - Variant Calls
-        data_type:
           - Somatic Variant Calls
-        variant_type:
-          - Single Nucleotide Variant
-          - Insertion-deletion
+        data_type:
+          - SNV
+          - Indel
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -159,14 +158,13 @@ workflows:
 
       # File output
       output_file_vcf_gz:
-        description: TNhaplotyper2 output VCF
+        description: sentieon TNhaplotyper2 output VCF
         data_category:
-          - Variant Calls
-        data_type:
           - Somatic Variant Calls
-        variant_type:
-          - Single Nucleotide Variant
-          - Insertion-deletion
+        data_type:
+          - SNV
+          - Indel
+        output_status: Final Output
 
     ## EC2 Configuration to use ########
     ####################################

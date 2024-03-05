@@ -100,6 +100,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -166,6 +167,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -180,7 +182,7 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # samtools_merge
+  #   samtools_merge
   ############################################
   samtools_merge:
 
@@ -216,6 +218,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -262,6 +265,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -323,6 +327,13 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Sentieon_BWA-MEM_202308.01
+        alignment_details:
+          - Sorted
+        reference_genome: GRCh38
 
     ## EC2 Configuration to use ########
     ####################################
