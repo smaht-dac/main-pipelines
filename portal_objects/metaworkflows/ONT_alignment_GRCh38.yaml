@@ -108,7 +108,7 @@ workflows:
         # - m7a.12xlarge
         # - m7i.8xlarge
         # - m7i.12xlarge
-      ebs_size: "4x"
+      ebs_size: "6x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_minimap2_sort
