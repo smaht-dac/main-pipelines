@@ -199,10 +199,6 @@ workflows:
   ############################################
   sentieon_bwa-mem_sort:
 
-    ## Lock version ####################
-    ####################################
-    version: 0.0.1
-
     ## Specific arguments ##############
     ####################################
     input:
@@ -259,10 +255,6 @@ workflows:
   ############################################
   AddReadGroups:
 
-    ## Lock version ####################
-    ####################################
-    version: 0.0.1
-
     ## Specific arguments ##############
     ####################################
     input:
@@ -314,10 +306,6 @@ workflows:
   #   sentieon_LocusCollector
   ############################################
   sentieon_LocusCollector:
-
-    ## Lock version ####################
-    ####################################
-    version: 0.0.1
 
     ## Lock shards ####################
     ####################################
@@ -382,10 +370,6 @@ workflows:
   #   sentieon_LocusCollector_apply
   ############################################
   sentieon_LocusCollector_apply:
-
-    ## Lock version ####################
-    ####################################
-    version: 0.0.1
 
     ## Lock shards ####################
     ####################################
@@ -458,10 +442,6 @@ workflows:
   ############################################
   shards_to_ReadGroups:
 
-    ## Lock version ####################
-    ####################################
-    version: 0.0.1
-
     ## Specific arguments ##############
     ####################################
     input:
@@ -511,13 +491,9 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  #   sentieon_QualCal
+  #   sentieon_Realigner
   ############################################
-  sentieon_QualCal:
-
-    ## Lock version ####################
-    ####################################
-    version: 0.0.1
+  sentieon_Realigner:
 
     ## Specific arguments ##############
     ####################################
@@ -527,6 +503,57 @@ workflows:
       input_file_bam:
         argument_type: file.bam
         source: shards_to_ReadGroups
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      known_sites_indel:
+        argument_type: file.vcf_gz
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: sentieon Realigner output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.9xlarge
+        - c6i.8xlarge
+        - c6a.8xlarge
+        - m6i.8xlarge
+        - m6a.8xlarge
+        - m7i.8xlarge
+      ebs_size: "3.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_sentieon_Realigner
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   sentieon_QualCal
+  ############################################
+  sentieon_QualCal:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: sentieon_Realigner
         source_argument_name: output_file_bam
 
       genome_reference_fasta:
@@ -572,10 +599,6 @@ workflows:
   #   samtools_merge
   ############################################
   samtools_merge:
-
-    ## Lock version ####################
-    ####################################
-    version: 0.0.1
 
     ## Specific arguments ##############
     ####################################
