@@ -1,6 +1,5 @@
 # Releases
 
----
 ## 0.1.0
 * shared-pipelines (, 0.1.0)
 * alignment-pipelines (, 0.1.0)
@@ -13,7 +12,6 @@
 * Added RNA-seq pipeline for short-reads
 * Added support for gtf and bam.pbi file format
 
----
 ## 0.0.1
 * shared-pipelines (44888f8, 0.0.1)
 * alignment-pipelines (fa2ef75, 0.0.1)
