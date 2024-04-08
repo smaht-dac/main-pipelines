@@ -1,7 +1,7 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: Illumina_alignment_GRCh38
+name: Illumina_alignment_from_CRAM_GRCh38
 description: End-to-end alignment pipeline for paired-end Illumina data. |
              Run fastp to pre-process input FASTQ files and remove polyG artifacts. |
              Run Sentieon BWA-MEM for alignment, incorporate read groups, |
