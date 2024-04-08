@@ -11,6 +11,7 @@ description: End-to-end alignment pipeline for paired-end Illumina data. |
              Calculate quality metrics. |
              Implemented to run in distributed mode and |
              processing reads by lane, per single sample and library. |
+             Implemented to use CRAM files as input. |
              Build hg38/GRCh38
 
 category:
@@ -25,19 +26,16 @@ category:
 input:
 
   # File arguments
-  input_files_r1_fastq_gz:
-    argument_type: file.fastq_gz
+  input_files_cram:
+    argument_type: file.cram
     dimensionality: 1
 
-  input_files_r2_fastq_gz:
-    argument_type: file.fastq_gz
-    dimensionality: 1
-
-  # !! FASTQ files need to be organized by lanes as the following example:
-  # -> input_files_r1_fastq_gz
-  #   [ lane_0_r1, lane_1_r1, lane_2_r1, ... ]
-  # -> input_files_r2_fastq_gz
-  #   [ lane_0_r2, lane_1_r2, lane_2_r2, ... ]
+  genome_reference_cram_fasta:
+    # this is the reference genome to use
+    # to generate FASTQ files from the CRAM
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
 
   genome_reference_fasta:
     argument_type: file.fa
@@ -95,6 +93,70 @@ workflows:
 #############################################################
 
   ## Workflow definition #####################
+  #   cram_to_fastq_paired-end
+  ############################################
+  cram_to_fastq_paired-end:
+
+    ## Workflow arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_cram:
+        argument_type: file.cram
+        source_argument_name: input_files_cram
+        scatter: 1
+
+      genome_reference_fasta:
+        argument_type: file.fa
+        source_argument_name: genome_reference_cram_fasta
+
+      # Parameter argument
+      nthreads:
+        argument_type: parameter.integer
+        value: 8
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_r1_fastq_gz:
+        description: reads FASTQ (from CRAM)
+        read_pair_number: "R1"
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+        output_status: Final Output
+
+      output_file_r2_fastq_gz:
+        description: reads FASTQ (from CRAM)
+        read_pair_number: "R2"
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+        output_status: Final Output
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.2xlarge
+        - m5a.2xlarge
+        - m5.2xlarge
+        - m6i.2xlarge
+        - m6a.2xlarge
+      ebs_size: "3x"
+      ebs_optimized: True
+      spot_instance: False
+      ebs_iops: 10000
+      ebs_throughput: 1000
+      run_name: run_cram_to_fastq_paired-end
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
   #   fastp_paired-end
   ############################################
   fastp_paired-end:
@@ -106,13 +168,13 @@ workflows:
       # File argument
       input_file_r1_fastq_gz:
         argument_type: file.fastq_gz
-        source_argument_name: input_files_r1_fastq_gz
-        scatter: 1
+        source: cram_to_fastq_paired-end
+        source_argument_name: output_file_r1_fastq_gz
 
       input_file_r2_fastq_gz:
         argument_type: file.fastq_gz
-        source_argument_name: input_files_r2_fastq_gz
-        scatter: 1
+        source: cram_to_fastq_paired-end
+        source_argument_name: output_file_r2_fastq_gz
 
       # Parameter argument
       trim_poly_g:
