@@ -322,6 +322,8 @@ workflows:
         argument_type: file.bam
         source: samtools_merge
         source_argument_name: output_file_bam
+        # We only need the index file
+        mount: True
 
     ## Output ##########################
     ####################################

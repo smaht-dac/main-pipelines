@@ -760,6 +760,8 @@ workflows:
         argument_type: file.bam
         source: samtools_merge
         source_argument_name: output_file_bam
+        # We only need the index file
+        mount: True
 
     ## Output ##########################
     ####################################
@@ -977,10 +979,10 @@ workflows:
     ####################################
     config:
       instance_type:
-        - m5a.large
-        - m5.large
-        - m6i.large
-        - m6a.large
+        - m5a.2xlarge
+        - m5.2xlarge
+        - m6i.2xlarge
+        - m6a.2xlarge
       ebs_size: "1.1x"
       ebs_optimized: True
       spot_instance: True
