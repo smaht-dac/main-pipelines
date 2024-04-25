@@ -13,3 +13,6 @@
 [submodule "smaht-pipeline-utils"]
 	path = smaht-pipeline-utils
 	url = https://github.com/smaht-dac/smaht-pipeline-utils
+[submodule "rnaseq-pipelines"]
+	path = rnaseq-pipelines
+	url = https://github.com/smaht-dac/rnaseq-pipelines

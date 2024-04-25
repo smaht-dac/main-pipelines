@@ -1,0 +1,322 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: RNA-seq_bulk_short_reads_GRCh38
+description: End-to-end RNA-seq pipeline for bulk paired-end short reads data. |
+             Run STAR to align to genome and transcriptome. |
+             Run RSEM for isoform and gene quantification. |
+             Run RNA-SeQC for gene quantification |
+             and to calculate quality metrics. |
+             Build hg38/GRCh38
+
+category:
+  - Alignment
+  - Gene Quantification
+  - Transcript Quantification
+  - Quality Control
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File arguments
+  input_files_r1_fastq_gz:
+    argument_type: file.fastq_gz
+    dimensionality: 1
+
+  input_files_r2_fastq_gz:
+    argument_type: file.fastq_gz
+    dimensionality: 1
+
+  genome_reference_star:
+    argument_type: file.tar_gz
+    files:
+      - star-index-no-alt-no-hla-gencode45-oh150@GCA_000001405.15_GRCh38_no_decoy
+
+  genome_reference_rsem:
+    argument_type: file.tar_gz
+    files:
+      - rsem-index-no-alt-no-hla-gencode45@GCA_000001405.15_GRCh38_no_decoy
+
+  gene_annotation_gtf:
+    argument_type: file.gtf
+    files:
+      - collapsed-genes-gencode@v45
+
+  # Parameter arguments
+  sample_name:
+    argument_type: parameter.string
+
+  library_id:
+    argument_type: parameter.string
+
+  is_stranded:
+    argument_type: parameter.string
+    # "true" or "false"
+
+  strandedness:
+    argument_type: parameter.string
+    # "rf" or "fr"
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  # sentieon_STAR_sort
+  ############################################
+  sentieon_STAR_sort:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_files_r1_fastq_gz:
+        argument_type: file.fastq_gz
+
+      input_files_r2_fastq_gz:
+        argument_type: file.fastq_gz
+
+      genome_reference_star:
+        argument_type: file.tar_gz
+
+      # Parameter argument
+      sample_name:
+        argument_type: parameter.string
+
+      library_id:
+        argument_type: parameter.string
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: STAR genome output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        s3_lifecycle_category: no_storage
+
+      output_transcriptome_bam:
+        description: STAR transcriptome output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+
+      output_tar_gz:
+        description: STAR auxiliary output
+        data_category:
+          - Sequencing Reads
+          - RNA Quantification
+        data_type:
+          - Statistics
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.9xlarge
+        - c6i.8xlarge
+        - c6a.8xlarge
+        - m6i.8xlarge
+        - m6a.8xlarge
+        - m7i.8xlarge
+      ebs_size: 250
+      # This should be reasonable for most RNA-seq data
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_sentieon_STAR_sort
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  # sentieon_Dedup
+  ############################################
+  sentieon_Dedup:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: sentieon_STAR_sort
+        source_argument_name: output_file_bam
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: STAR genome output BAM (Dedup)
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-STAR_2.7.10b
+        alignment_details:
+          - Sorted
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.9xlarge
+        - c6i.8xlarge
+        - c6a.8xlarge
+        - m6i.8xlarge
+        - m6a.8xlarge
+        - m7i.8xlarge
+      ebs_size: "3.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_sentieon_Dedup
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  # RSEM
+  ############################################
+  RSEM:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_transcriptome_bam:
+        argument_type: file.bam
+        source: sentieon_STAR_sort
+        source_argument_name: output_transcriptome_bam
+
+      genome_reference_rsem:
+        argument_type: file.tar_gz
+
+      # Parameter argument
+      is_stranded:
+        argument_type: parameter.string
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_isoforms_tsv:
+        description: RSEM isoform quantification
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Transcript Expression
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-RSEM_v1.3.3
+        reference_genome: GRCh38
+
+      output_genes_tsv:
+        description: RSEM gene quantification
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Gene Expression
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-RSEM_v1.3.3
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.2xlarge
+        - m5.2xlarge
+        - m6i.2xlarge
+        - m6a.2xlarge
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_RSEM
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  # RNA-SeQC
+  ############################################
+  RNA-SeQC:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: sentieon_STAR_sort
+        source_argument_name: output_file_bam
+
+      gene_annotation_gtf:
+        argument_type: file.gtf
+
+      # Parameter argument
+      strandedness:
+        argument_type: parameter.string
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_gene_tpm_tsv:
+        description: RNA-SeQC gene quantification
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Gene Expression
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-RNA-SeQC_v2.4.2
+        reference_genome: GRCh38
+
+      output_tar_gz:
+        description: RNA-SeQC auxiliary output
+        data_category:
+          - RNA Quantification
+          - Quality Control
+        data_type:
+          - Statistics
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-RNA-SeQC_v2.4.2
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.2xlarge
+        - m5.2xlarge
+        - m6i.2xlarge
+        - m6a.2xlarge
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_RNA-SeQC
+      behavior_on_capacity_limit: wait_and_retry
