@@ -244,6 +244,7 @@ workflows:
         - m6i.8xlarge
         - m6a.8xlarge
         - m7i.8xlarge
+        - m7a.8xlarge
       ebs_size: "4x"
       ebs_optimized: True
       spot_instance: True
@@ -431,6 +432,7 @@ workflows:
         - m6i.8xlarge
         - m6a.8xlarge
         - m7i.8xlarge
+        - m7a.8xlarge
       ebs_size: "0.1x"
       ebs_optimized: True
       spot_instance: True
@@ -535,6 +537,7 @@ workflows:
         - m6i.8xlarge
         - m6a.8xlarge
         - m7i.8xlarge
+        - m7a.8xlarge
       ebs_size: "3.5x"
       ebs_optimized: True
       spot_instance: True
@@ -589,6 +592,7 @@ workflows:
         - m6i.8xlarge
         - m6a.8xlarge
         - m7i.8xlarge
+        - m7a.8xlarge
       ebs_size: "5x"
       ebs_optimized: True
       spot_instance: True

@@ -125,7 +125,12 @@ workflows:
     config:
       instance_type:
         - m5.4xlarge
-      ebs_size: 500
+        - m5a.4xlarge
+        - m6i.4xlarge
+        - m6a.4xlarge
+        - m7i.4xlarge
+        - m7a.4xlarge
+      ebs_size: 300
       # This should be reasonable for most RNA-seq data
       ebs_optimized: True
       spot_instance: True
@@ -172,7 +177,7 @@ workflows:
     config:
       instance_type:
         - m5.4xlarge
-      ebs_size: "3.5x"
+      ebs_size: "20x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_Dedup
@@ -235,7 +240,7 @@ workflows:
     config:
       instance_type:
         - m5.4xlarge
-      ebs_size: "1.1x"
+      ebs_size: "3x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_RSEM
