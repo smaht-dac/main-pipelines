@@ -124,13 +124,8 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5.9xlarge
-        - c6i.8xlarge
-        - c6a.8xlarge
-        - m6i.8xlarge
-        - m6a.8xlarge
-        - m7i.8xlarge
-      ebs_size: 250
+        - m5.4xlarge
+      ebs_size: 500
       # This should be reasonable for most RNA-seq data
       ebs_optimized: True
       spot_instance: True
@@ -176,12 +171,7 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5.9xlarge
-        - c6i.8xlarge
-        - c6a.8xlarge
-        - m6i.8xlarge
-        - m6a.8xlarge
-        - m7i.8xlarge
+        - m5.4xlarge
       ebs_size: "3.5x"
       ebs_optimized: True
       spot_instance: True
@@ -244,10 +234,7 @@ workflows:
     ####################################
     config:
       instance_type:
-        - m5a.2xlarge
-        - m5.2xlarge
-        - m6i.2xlarge
-        - m6a.2xlarge
+        - m5.4xlarge
       ebs_size: "1.1x"
       ebs_optimized: True
       spot_instance: True
@@ -266,7 +253,7 @@ workflows:
       # File argument
       input_file_bam:
         argument_type: file.bam
-        source: sentieon_STAR_sort
+        source: sentieon_Dedup
         source_argument_name: output_file_bam
 
       gene_annotation_gtf:
@@ -311,10 +298,7 @@ workflows:
     ####################################
     config:
       instance_type:
-        - m5a.2xlarge
-        - m5.2xlarge
-        - m6i.2xlarge
-        - m6a.2xlarge
+        - m5.4xlarge
       ebs_size: "1.1x"
       ebs_optimized: True
       spot_instance: True
