@@ -66,7 +66,7 @@ input:
 workflows:
 
   ## Workflow definition #####################
-  # sentieon_STAR_sort
+  #   sentieon_STAR_sort
   ############################################
   sentieon_STAR_sort:
 
@@ -138,7 +138,7 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # sentieon_Dedup
+  #   sentieon_Dedup
   ############################################
   sentieon_Dedup:
 
@@ -177,14 +177,19 @@ workflows:
     config:
       instance_type:
         - m5.4xlarge
-      ebs_size: "20x"
+        - m5a.4xlarge
+        - m6i.4xlarge
+        - m6a.4xlarge
+        - m7i.4xlarge
+        - m7a.4xlarge
+      ebs_size: "5x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_Dedup
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # RSEM
+  #   RSEM
   ############################################
   RSEM:
 
@@ -240,14 +245,19 @@ workflows:
     config:
       instance_type:
         - m5.4xlarge
-      ebs_size: "3x"
+        - m5a.4xlarge
+        - m6i.4xlarge
+        - m6a.4xlarge
+        - m7i.4xlarge
+        - m7a.4xlarge
+      ebs_size: "5x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_RSEM
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  # RNA-SeQC
+  #   RNA-SeQC
   ############################################
   RNA-SeQC:
 
@@ -304,8 +314,112 @@ workflows:
     config:
       instance_type:
         - m5.4xlarge
+        - m5a.4xlarge
+        - m6i.4xlarge
+        - m6a.4xlarge
+        - m7i.4xlarge
+        - m7a.4xlarge
       ebs_size: "1.1x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_RNA-SeQC
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   collect_rnaseqc_metrics
+  ############################################
+  collect_rnaseqc_metrics:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_tar_gz:
+        argument_type: file.tar_gz
+        source: RNA-SeQC
+        source_argument_name: output_tar_gz
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_json:
+        description: RNA-SeQC metrics summary JSON
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - t3.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_collect_rnaseqc_metrics
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   parse-qc_RNA-SeQC_Quality_Metrics
+  ############################################
+  parse-qc_RNA-SeQC_Quality_Metrics:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: sentieon_Dedup
+        source_argument_name: output_file_bam
+        mount: True
+        # this file is actually not used by the code but is needed
+        #   to specify where the quality metrics object need to be linked
+
+      input_file_json:
+        argument_type: file.json
+        source: collect_rnaseqc_metrics
+        source_argument_name: output_file_json
+
+      input_tar_gz:
+        argument_type: file.tar_gz
+        source: RNA-SeQC
+        source_argument_name: output_tar_gz
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      qc_values_json:
+        description: QC output JSON
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+
+      metrics_zip:
+        description: QC compressed output
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+          - Image
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - t3.small
+      ebs_size: 10
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_parse-qc_RNA-SeQC_Quality_Metrics
       behavior_on_capacity_limit: wait_and_retry
