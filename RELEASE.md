@@ -5,6 +5,7 @@
 * alignment-pipelines (, 0.1.0)
 * sentieon-pipelines (, 0.1.0)
 * qc-pipelines (, 0.1.0)
+* rnaseq-pipelines (, 0.1.0)
 * smaht-pipeline-utils (, 0.1.0)
 
 ### *Notes*:
