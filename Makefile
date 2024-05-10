@@ -59,6 +59,7 @@ deploy-all:
 			sentieon-pipelines \
 			alignment-pipelines \
 			qc-pipelines \
+			rnaseq-pipelines \
 			.
 
 info:
