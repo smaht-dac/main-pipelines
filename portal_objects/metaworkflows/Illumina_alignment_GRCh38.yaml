@@ -901,6 +901,10 @@ workflows:
       genome_reference_fasta:
         argument_type: file.fa
 
+      nthreads:
+        argument_type: parameter.integer
+        value: 4
+
     ## Output ##########################
     ####################################
     output:
@@ -934,10 +938,10 @@ workflows:
     ####################################
     config:
       instance_type:
-        - m5a.large
-        - m5.large
-        - m6i.large
-        - m6a.large
+        - m5a.xlarge
+        - m5.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
       ebs_size: "1.1x"
       ebs_optimized: True
       spot_instance: True
