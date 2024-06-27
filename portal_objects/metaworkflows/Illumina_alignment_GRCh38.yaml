@@ -64,6 +64,16 @@ input:
     files:
       - regions-200M-16shards@GCA_000001405.15_GRCh38_no_decoy
 
+  interval_list:
+    argument_type: file.interval_list
+    files:
+      - picard-chr22-interval-list@GCA_000001405.15_GRCh38_no_decoy
+
+  resources_vb2:
+    argument_type: file.vb2
+    files:
+      - verifybamid2-resources-1000g-100k@GRCh38
+
   # Parameter arguments
   sample_name:
     argument_type: parameter.string
@@ -83,6 +93,15 @@ input:
   read_length:
     argument_type: parameter.integer
     value: 150
+
+  # QC ruleset arguments
+  qc_ruleset_VerifyBamID2:
+    argument_type: qc_ruleset.object
+    qc_thresholds:
+      freemix_alpha:
+        rule: Estimate of Contamination [VerifyBamID2]|<|0.01|0.03
+        flag: True
+    qc_rule: "{freemix_alpha}"
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
@@ -1014,6 +1033,9 @@ workflows:
       genome_reference_fasta:
         argument_type: file.fa
 
+      interval_list:
+        argument_type: file.interval_list
+
       # Parameter argument
       read_length:
         argument_type: parameter.integer
@@ -1137,6 +1159,58 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
+  ############################################
+  verifybamid2:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      resources_vb2:
+        argument_type: file.vb2
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 2
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: VerifyBamID2 output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_verifybamid2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
   #   parse-qc_BAM_Quality_Metrics_paired-end
   ############################################
   parse-qc_BAM_Quality_Metrics_paired-end:
@@ -1228,6 +1302,16 @@ workflows:
         argument_type: file.txt
         source: bamstats
         source_argument_name: output_file_txt
+
+      VERIFYBAMID2_OUTPUT:
+        argument_type: file.txt
+        source: verifybamid2
+        source_argument_name: output_file_txt
+
+      # QC ruleset arguments
+      qc_ruleset:
+        argument_type: qc_ruleset.object
+        source_argument_name: qc_ruleset_VerifyBamID2
 
     ## Output ##########################
     ####################################
