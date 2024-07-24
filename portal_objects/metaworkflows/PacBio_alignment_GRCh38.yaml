@@ -30,12 +30,32 @@ input:
     files:
       - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
 
+  resources_vb2:
+    argument_type: file.vb2
+    files:
+      - verifybamid2-resources-1000g-10k@GRCh38
+
   # Required parameter argument
   sample_name:
     argument_type: parameter.string
 
   library_id:
     argument_type: parameter.string
+
+  # QC ruleset argument
+  qc_ruleset:
+    argument_type: qc_ruleset.object
+    qc_thresholds:
+      freemix_alpha:
+        rule: Estimate of Contamination [VerifyBamID2]|<|0.01|0.03
+        flag: True
+      mapped:
+        rule: Percentage of Reads Mapped [Samtools]|>|98|0
+        flag: True
+      mismatch_rate:
+        rule: Aligned Bases Mismatch Rate [Picard]|<|0.003|1
+        flag: True
+    qc_rule: "{freemix_alpha} and {mapped} and {mismatch_rate}"
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
@@ -455,6 +475,9 @@ workflows:
         argument_type: file.bam
         source: samtools_merge
         source_argument_name: output_file_bam
+        # extracts selected chromosomes
+        # and the processing is sequential
+        mount: True
 
       genome_reference_fasta:
         argument_type: file.fa
@@ -597,9 +620,117 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
+  ############################################
+  samtools_subsample:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      input_file_stats:
+        argument_type: file.txt
+        source: samtools_stats
+        source_argument_name: output_file_txt
+
+      coverage:
+        argument_type: parameter.integer
+        value: 20
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 2
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: subsample output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+      ebs_size: "2.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_samtools_subsample
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  verifybamid2:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_subsample
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      resources_vb2:
+        argument_type: file.vb2
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 2
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: VerifyBamID2 output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - r5a.4xlarge
+        - r6a.4xlarge
+        - r6i.4xlarge
+        - r7a.4xlarge
+        - r7i.4xlarge
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_verifybamid2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
   #   parse-qc_BAM_Quality_Metrics_single-end
   ############################################
-  parse-qc_BAM_Quality_Metrics_single-end:
+  parse-qc_BAM_Quality_Metrics_single-end_verifybamid2:
 
     ## Specific arguments ##############
     ####################################
@@ -674,6 +805,15 @@ workflows:
         source: bamstats
         source_argument_name: output_file_txt
 
+      VERIFYBAMID2_OUTPUT:
+        argument_type: file.txt
+        source: verifybamid2
+        source_argument_name: output_file_txt
+
+      # QC ruleset arguments
+      qc_ruleset:
+        argument_type: qc_ruleset.object
+
     ## Output ##########################
     ####################################
     output:
@@ -702,5 +842,5 @@ workflows:
       ebs_size: 10
       ebs_optimized: True
       spot_instance: True
-      run_name: run_parse-qc_BAM_Quality_Metrics_single-end
+      run_name: run_parse-qc_BAM_Quality_Metrics_single-end_verifybamid2
       behavior_on_capacity_limit: wait_and_retry

@@ -46,6 +46,18 @@ input:
     argument_type: parameter.string
     value: "map-ont"
 
+  # QC ruleset argument
+  qc_ruleset:
+    argument_type: qc_ruleset.object
+    qc_thresholds:
+      mapped:
+        rule: Percentage of Reads Mapped [Samtools]|>|98|0
+        flag: True
+      mismatch_rate:
+        rule: Aligned Bases Mismatch Rate [Picard]|<|0.01|1
+        flag: True
+    qc_rule: "{mapped} and {mismatch_rate}"
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -511,10 +523,14 @@ workflows:
         argument_type: file.bam
         source: samtools_merge
         source_argument_name: output_file_bam
+        # extracts selected chromosomes
+        # and the processing is sequential
+        mount: True
 
       genome_reference_fasta:
         argument_type: file.fa
 
+      # Parameter argument
       nthreads:
         argument_type: parameter.integer
         value: 4
@@ -729,6 +745,10 @@ workflows:
         argument_type: file.txt
         source: bamstats
         source_argument_name: output_file_txt
+
+      # QC ruleset arguments
+      qc_ruleset:
+        argument_type: qc_ruleset.object
 
     ## Output ##########################
     ####################################

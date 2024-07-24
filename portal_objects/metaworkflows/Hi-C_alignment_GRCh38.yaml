@@ -413,6 +413,9 @@ workflows:
         argument_type: file.bam
         source: AddReadGroups
         source_argument_name: output_file_bam
+        # extracts selected chromosomes
+        # and the processing is sequential
+        mount: True
 
       genome_reference_fasta:
         argument_type: file.fa
