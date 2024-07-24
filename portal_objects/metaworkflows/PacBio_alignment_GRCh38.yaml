@@ -523,7 +523,7 @@ workflows:
         - m5.xlarge
         - m6i.xlarge
         - m6a.xlarge
-      ebs_size: "3x"
+      ebs_size: "1.5x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_picard_CollectGcBiasMetrics
