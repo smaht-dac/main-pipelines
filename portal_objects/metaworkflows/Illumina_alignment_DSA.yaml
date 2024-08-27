@@ -40,14 +40,23 @@ input:
 
   genome_reference_fasta:
     argument_type: file.fa
+    files:
+    # GRCh38 is the default, change to correct DSA reference
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
 
   genome_reference_bwt:
     argument_type: file.bwt
+    files:
+    # GRCh38 is the default, change to correct DSA reference
+      - complete-reference-bwt-no-alt@GCA_000001405.15_GRCh38_no_decoy
 
   shards_file:
     argument_type: file.txt
     # This needs to have 16 shards to match the pipeline structure
-    #   and the number of shards defined in shards_index
+    #   and the number of shards defined in shards_index.
+    files:
+    # GRCh38 is the default, change to correct DSA reference
+      - regions-200M-16shards@GCA_000001405.15_GRCh38_no_decoy
 
   # Parameter arguments
   sample_name:
