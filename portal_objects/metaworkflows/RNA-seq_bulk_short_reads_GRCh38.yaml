@@ -176,12 +176,11 @@ workflows:
     ####################################
     config:
       instance_type:
-        - m5.4xlarge
-        - m5a.4xlarge
-        - m6i.4xlarge
-        - m6a.4xlarge
-        - m7i.4xlarge
-        - m7a.4xlarge
+        - r5.4xlarge
+        - r5n.4xlarge
+        - r5a.4xlarge
+        - r6i.4xlarge
+        - r6a.4xlarge
       ebs_size: "5x"
       ebs_optimized: True
       spot_instance: True
@@ -250,7 +249,7 @@ workflows:
         - m6a.4xlarge
         - m7i.4xlarge
         - m7a.4xlarge
-      ebs_size: "5x"
+      ebs_size: "8x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_RSEM

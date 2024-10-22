@@ -669,6 +669,60 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
+  ############################################
+  mosdepth:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 4
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_summary_txt:
+        description: mosdepth summary TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_file_txt:
+        description: mosdepth output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.xlarge
+        - m5.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_mosdepth
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
   #   parse-qc_BAM_Quality_Metrics_single-end
   ############################################
   parse-qc_BAM_Quality_Metrics_single-end:
@@ -744,6 +798,16 @@ workflows:
       BAMSTATS_OUTPUT:
         argument_type: file.txt
         source: bamstats
+        source_argument_name: output_file_txt
+
+      MOSDEPTH_SUMMARY:
+        argument_type: file.txt
+        source: mosdepth
+        source_argument_name: output_summary_txt
+
+      MOSDEPTH_OUTPUT:
+        argument_type: file.txt
+        source: mosdepth
         source_argument_name: output_file_txt
 
       # QC ruleset arguments
