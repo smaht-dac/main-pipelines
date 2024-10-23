@@ -19,7 +19,7 @@
 | **short_reads_FASTQ_quality_metrics**| qc-pipelines    | + Added Kraken2                                           |
 | **long_reads_FASTQ_quality_metrics**| qc-pipelines    | *Pipeline released*                                       |
 | **cram_to_fastq_paired-end**     | shared-pipelines | *Pipeline released*                                       |
-| **bam_to_fastq_paired-end**      | shared-pipelines | *No changes*                                             |
+| **bam_to_fastq_paired-end**      | shared-pipelines | *No changes (last changed in 0.0.1)*                                             |
 
 ---
 
