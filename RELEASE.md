@@ -1,4 +1,4 @@
-# Releases
+# CHANGELOG
 
 ### 0.1.0
 * **shared-pipelines** (, 0.1.0)
@@ -8,40 +8,18 @@
 * **rnaseq-pipelines** (, 0.1.0)
 * **smaht-pipeline-utils** (, 0.1.0)
 
-#### **CHANGELOG**
-
-**Illumina_alignment_GRCh38**
-- **<sup><sub>+</sub></sup>Added** local indel realignment
-- **<sup><sub>+</sub></sup>Added** support for DRAGEN read names with UMI information
-- **<sup><sub>+</sub></sup>Added** VerifyBamID
-- **<sup><sub>+</sub></sup>Added** mosdepth
-
-**PacBio_alignment_GRCh38**
-- **<sup><sub>+</sub></sup>Added** VerifyBamID
-- **<sup><sub>+</sub></sup>Added** mosdepth
-
-**ONT_alignment_GRCh38**
-- **<sup><sub>+</sub></sup>Added** mosdepth
-
-**Hi-C_alignment_GRCh38**
-- **<sup><sub>+</sub></sup>Added** support for DRAGEN read names with UMI information
-
-**Illumina_FASTQ_quality_metrics**
-- **<sup><sub>+</sub></sup>Added** Kraken2
-
-**short_reads_FASTQ_quality_metrics**
-- **<sup><sub>+</sub></sup>Added** Kraken2
-
-**long_reads_FASTQ_quality_metrics** <sup><sub>NEW</sub></sup>
-- *Quality metrics for long-read raw data (FASTQ, uBAM)*
-
-**cram_to_fastq_paired-end** <sup><sub>NEW</sub></sup>
-- *CRAM to FASTQ conversion for short-read paired-end data*
-
-**RNA-seq_bulk_short_reads_GRCh38** <sup><sub>NEW</sub></sup>
-- *Alignment for short-read paired-end bulk RNA-seq data*
-- *Quantification of transcript and gene abundances*
-- *Quality metrics for short-read paired-end bulk RNA-seq aligned data (BAM)*
+| Pipeline (*MetaWorkflow*)        | Repository      | Change/Feature                                             |
+|----------------------------------|-----------------|-----------------------------------------------------------|
+| **Illumina_alignment_GRCh38**    | main-pipelines  | + Added local indel realignment<br>+ Added support for DRAGEN read names with UMI information<br>+ Added VerifyBamID<br>+ Added mosdepth |
+| **PacBio_alignment_GRCh38**      | main-pipelines  | + Added VerifyBamID<br>+ Added mosdepth                   |
+| **ONT_alignment_GRCh38**         | main-pipelines  | + Added mosdepth                                           |
+| **Hi-C_alignment_GRCh38**        | main-pipelines  | + Added support for DRAGEN read names with UMI information<br>+ Added mosdepth  |
+| **RNA-seq_bulk_short_reads_GRCh38**| main-pipelines  | *Pipeline released*                                       |
+| **Illumina_FASTQ_quality_metrics**| qc-pipelines    | + Added Kraken2                                           |
+| **short_reads_FASTQ_quality_metrics**| qc-pipelines    | + Added Kraken2                                           |
+| **long_reads_FASTQ_quality_metrics**| qc-pipelines    | *Pipeline released*                                       |
+| **cram_to_fastq_paired-end**     | shared-pipelines | *Pipeline released*                                       |
+| **bam_to_fastq_paired-end**      | shared-pipelines | *No changes*                                             |
 
 ---
 
@@ -53,30 +31,12 @@
 * **qc-pipelines** (94ddb5f, 0.0.1)
 * **smaht-pipeline-utils** (af5cb1e, 0.0.1)
 
-#### **CHANGELOG**
-
-**Illumina_alignment_GRCh38** <sup><sub>NEW</sub></sup>
-- *Removal of polyG artifacts for Illumina two-channel sequencing systems*
-- *Alignment for short-read paired-end Illumina data*
-- *Quality metrics for short-read paired-end aligned data (BAM)*
-
-**PacBio_alignment_GRCh38** <sup><sub>NEW</sub></sup>
-- *Alignment for long-read PacBio Hifi data*
-- *Quality metrics for long-read aligned data (BAM)*
-
-**ONT_alignment_GRCh38** <sup><sub>NEW</sub></sup>
-- *Alignment for long-read Oxford Nanopore Technology data*
-- *Quality metrics for long-read aligned data (BAM)*
-
-**Hi-C_alignment_GRCh38** <sup><sub>NEW</sub></sup>
-- *Alignment for short-read paired-end Illumina Hi-C data*
-- *Quality metrics for short-read aligned data (BAM)*
-
-**Illumina_FASTQ_quality_metrics** <sup><sub>NEW</sub></sup>
-- *Quality metrics for short-read paired-end raw data (FASTQ). Includes a safety check against duplicate lanes based on Illumina read names*
-
-**short_reads_FASTQ_quality_metrics** <sup><sub>NEW</sub></sup>
-- *Quality metrics for short-read raw data (FASTQ)*
-
-**bam_to_fastq_paired-end** <sup><sub>NEW</sub></sup>
-- *BAM to FASTQ conversion for short-read paired-end data*
+| Pipeline (*MetaWorkflow*)        | Repository      | Change/Feature           |
+|----------------------------------|-----------------|---------------------------|
+| **Illumina_alignment_GRCh38**    | main-pipelines  | *Pipeline released*       |
+| **PacBio_alignment_GRCh38**      | main-pipelines  | *Pipeline released*       |
+| **ONT_alignment_GRCh38**         | main-pipelines  | *Pipeline released*       |
+| **Hi-C_alignment_GRCh38**        | main-pipelines  | *Pipeline released*       |
+| **Illumina_FASTQ_quality_metrics**| qc-pipelines    | *Pipeline released*       |
+| **short_reads_FASTQ_quality_metrics**| qc-pipelines    | *Pipeline released*       |
+| **bam_to_fastq_paired-end**      | shared-pipelines | *Pipeline released*       |
