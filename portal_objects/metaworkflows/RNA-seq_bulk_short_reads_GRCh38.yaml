@@ -33,17 +33,17 @@ input:
   genome_reference_star:
     argument_type: file.tar_gz
     files:
-      - star-index-no-alt-no-hla-gencode45-oh150@GCA_000001405.15_GRCh38_no_decoy
+      - star-index-no-alt-no-hla-gencode47-oh150@GCA_000001405.15_GRCh38_no_decoy
 
   genome_reference_rsem:
     argument_type: file.tar_gz
     files:
-      - rsem-index-no-alt-no-hla-gencode45@GCA_000001405.15_GRCh38_no_decoy
+      - rsem-index-no-alt-no-hla-gencode47@GCA_000001405.15_GRCh38_no_decoy
 
   gene_annotation_gtf:
     argument_type: file.gtf
     files:
-      - collapsed-genes-gencode@v45
+      - collapsed-genes-gencode@v47
 
   # Parameter arguments
   sample_name:
