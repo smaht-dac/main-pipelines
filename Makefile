@@ -26,6 +26,7 @@ deploy-base:
 		--account ${AWS_ACCOUNT_NUMBER} \
 		--region ${AWS_DEFAULT_REGION} \
 		--sentieon-server ${SENTIEON_LICENSE} \
+		--version-file VERSION \
 		--post-software \
 		--post-file-format \
 		--post-file-reference \
@@ -46,6 +47,7 @@ deploy-all:
 		--account ${AWS_ACCOUNT_NUMBER} \
 		--region ${AWS_DEFAULT_REGION} \
 		--sentieon-server ${SENTIEON_LICENSE} \
+		--version-file VERSION \
 		--post-software \
 		--post-file-format \
 		--post-file-reference \
