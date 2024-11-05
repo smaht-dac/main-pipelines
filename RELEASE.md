@@ -1,6 +1,31 @@
 # CHANGELOG
 
+### 0.2.0
+
+* **shared-pipelines** ()
+* **alignment-pipelines** ()
+* **sentieon-pipelines** ()
+* **qc-pipelines** ()
+* **rnaseq-pipelines** ()
+* **smaht-pipeline-utils** ()
+
+| Pipeline (*MetaWorkflow*)               | Repository        | Change/Feature                                  |
+|-----------------------------------------|-------------------|-------------------------------------------------|
+| **Illumina_alignment_GRCh38**           | main-pipelines    | *No change since 0.1.0*                         |
+| **PacBio_alignment_GRCh38**             | main-pipelines    | *No change since 0.1.0*                         |
+| **ONT_alignment_GRCh38**                | main-pipelines    | *No change since 0.1.0*                         |
+| **Hi-C_alignment_GRCh38**               | main-pipelines    | *No change since 0.1.0*                         |
+| **RNA-seq_bulk_short_reads_GRCh38**     | main-pipelines    | + GENCODE release updated to v47                |
+| **Illumina_FASTQ_quality_metrics**      | qc-pipelines      | *No change since 0.1.0*                         |
+| **short_reads_FASTQ_quality_metrics**   | qc-pipelines      | *No change since 0.1.0*                         |
+| **long_reads_FASTQ_quality_metrics**    | qc-pipelines      | *No change since 0.1.0*                         |
+| **cram_to_fastq_paired-end**            | shared-pipelines  | *No change since 0.1.0*                         |
+| **bam_to_fastq_paired-end**             | shared-pipelines  | *No change since 0.0.1*                         |
+
+---
+
 ### 0.1.0
+
 * **shared-pipelines** (56a0242)
 * **alignment-pipelines** (2d2e348)
 * **sentieon-pipelines** (4ac686f)
