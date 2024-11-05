@@ -1,12 +1,12 @@
 # CHANGELOG
 
 ### 0.1.0
-* **shared-pipelines** ()
-* **alignment-pipelines** ()
-* **sentieon-pipelines** ()
-* **qc-pipelines** ()
-* **rnaseq-pipelines** ()
-* **smaht-pipeline-utils** ()
+* **shared-pipelines** (56a0242)
+* **alignment-pipelines** (2d2e348)
+* **sentieon-pipelines** (4ac686f)
+* **qc-pipelines** (259ba8d)
+* **rnaseq-pipelines** (a92c5d2)
+* **smaht-pipeline-utils** (8b54a7d)
 
 | Pipeline (*MetaWorkflow*)        | Repository      | Change/Feature                                             |
 |----------------------------------|-----------------|-----------------------------------------------------------|
