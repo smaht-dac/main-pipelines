@@ -15,10 +15,11 @@
 | **PacBio_alignment_GRCh38**             | main-pipelines    | *No change since 0.1.0*                         |
 | **ONT_alignment_GRCh38**                | main-pipelines    | *No change since 0.1.0*                         |
 | **Hi-C_alignment_GRCh38**               | main-pipelines    | *No change since 0.1.0*                         |
-| **RNA-seq_bulk_short_reads_GRCh38**     | main-pipelines    | + GENCODE release updated to v47                |
+| **RNA-seq_bulk_short_reads_GRCh38**     | main-pipelines    | + GENCODE release updated to v47<br>+ Added tissues classifier |
 | **Illumina_FASTQ_quality_metrics**      | qc-pipelines      | *No change since 0.1.0*                         |
 | **short_reads_FASTQ_quality_metrics**   | qc-pipelines      | *No change since 0.1.0*                         |
 | **long_reads_FASTQ_quality_metrics**    | qc-pipelines      | *No change since 0.1.0*                         |
+| **sample_identity_check**               | qc-pipelines      | *Pipeline released*                             |
 | **cram_to_fastq_paired-end**            | shared-pipelines  | *No change since 0.1.0*                         |
 | **bam_to_fastq_paired-end**             | shared-pipelines  | *No change since 0.0.1*                         |
 

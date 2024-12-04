@@ -45,6 +45,11 @@ input:
     files:
       - collapsed-genes-gencode@v47
 
+  classifier:
+    argument_type: file.tar_gz
+    files:
+      - tissue-classifier-model@v20241125
+
   # Parameter arguments
   sample_name:
     argument_type: parameter.string
@@ -351,7 +356,6 @@ workflows:
           - Quality Control
         data_type:
           - Statistics
-        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -362,6 +366,48 @@ workflows:
       ebs_optimized: True
       spot_instance: True
       run_name: run_collect_rnaseqc_metrics
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   tissue_classifier
+  ############################################
+  tissue_classifier:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      rnaseqc_output:
+        argument_type: file.tsv
+        source: RNA-SeQC
+        source_argument_name: output_gene_tpm_tsv
+
+      classifier:
+        argument_type: file.tar_gz
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: tissue classifier output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - t3.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_tissue_classifier
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
@@ -382,12 +428,17 @@ workflows:
         # this file is actually not used by the code but is needed
         #   to specify where the quality metrics object need to be linked
 
-      input_file_json:
+      input_rnaseqc_json:
         argument_type: file.json
         source: collect_rnaseqc_metrics
         source_argument_name: output_file_json
 
-      input_tar_gz:
+      input_classifier_txt:
+        argument_type: file.txt
+        source: tissue_classifier
+        source_argument_name: output_file_txt
+
+      input_rnaseqc_tar_gz:
         argument_type: file.tar_gz
         source: RNA-SeQC
         source_argument_name: output_tar_gz
