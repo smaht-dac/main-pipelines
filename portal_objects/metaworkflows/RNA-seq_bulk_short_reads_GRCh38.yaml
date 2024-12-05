@@ -173,6 +173,8 @@ workflows:
         # These fields are required to link metadata for the naming
         software:
           - smaht:Software-STAR_2.7.10b
+        annotation:
+          - smaht:ReferenceFile-gencode_v47
         alignment_details:
           - Sorted
         reference_genome: GRCh38
@@ -230,6 +232,8 @@ workflows:
         # These fields are required to link metadata for the naming
         software:
           - smaht:Software-RSEM_v1.3.3
+        annotation:
+          - smaht:ReferenceFile-gencode_v47
         reference_genome: GRCh38
 
       output_genes_tsv:
@@ -242,6 +246,8 @@ workflows:
         # These fields are required to link metadata for the naming
         software:
           - smaht:Software-RSEM_v1.3.3
+        annotation:
+          - smaht:ReferenceFile-gencode_v47
         reference_genome: GRCh38
 
     ## EC2 Configuration to use ########
@@ -298,6 +304,8 @@ workflows:
         # These fields are required to link metadata for the naming
         software:
           - smaht:Software-RNA-SeQC_v2.4.2
+        annotation:
+          - smaht:ReferenceFile-gencode_v47
         reference_genome: GRCh38
 
       output_tar_gz:
@@ -311,6 +319,8 @@ workflows:
         # These fields are required to link metadata for the naming
         software:
           - smaht:Software-RNA-SeQC_v2.4.2
+        annotation:
+          - smaht:ReferenceFile-gencode_v47
         reference_genome: GRCh38
 
     ## EC2 Configuration to use ########
