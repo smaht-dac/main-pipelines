@@ -47,7 +47,7 @@ input:
     argument_type: qc_ruleset.object
     qc_thresholds:
       freemix_alpha:
-        rule: Estimate of Contamination [VerifyBamID2]|<|0.01|0.03
+        rule: Estimate of Contamination [VerifyBamID2]|<|0.01|1
         flag: True
       mapped:
         rule: Percentage of Reads Mapped [Samtools]|>|98|0
