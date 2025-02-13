@@ -4,7 +4,7 @@
 name: RNA-seq_kinnex_long_reads_GRCh38
 description: End-to-end RNA-seq pipeline for Kinnex long reads data. |
              Run IsoSeq and Pigeon to identify transcripts, |
-             collapse, classify and filter isoforms. 
+             collapse, classify and filter isoforms. |
              Generate summary metrics. |
              Build hg38/GRCh38
 
@@ -93,7 +93,7 @@ workflows:
         - m6a.xlarge
         - m7i.xlarge
         - m7a.xlarge
-      ebs_size: 4x
+      ebs_size: "4x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_pbmerge
@@ -540,7 +540,7 @@ workflows:
           - Transcriptome Annotation
         data_type:
           - Statistics
-        ### -> TO KEEP
+        s3_lifecycle_category: no_storage
 
       output_classification_txt:
         description: pigeon filter classification TXT
