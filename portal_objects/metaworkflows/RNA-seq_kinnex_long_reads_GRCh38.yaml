@@ -1,0 +1,636 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: RNA-seq_kinnex_long_reads_GRCh38
+description: End-to-end RNA-seq pipeline for Kinnex long reads data. |
+             Run IsoSeq and Pigeon to identify transcripts, |
+             collapse, classify and filter isoforms. 
+             Generate summary metrics. |
+             Build hg38/GRCh38
+
+category:
+  - Alignment
+  - Transcript Quantification
+  - Quality Control
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File arguments
+  input_files_bam:
+    argument_type: file.bam
+    dimensionality: 1
+
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  gencode_annotation_gtf:
+    argument_type: file.gtf
+    files:
+      - gencode@v47
+
+  refTSS_bed:
+    argument_type: file.bed
+    files:
+      - cage-tss-peaks@GRCh38_08232022
+
+  polyA_txt:
+    argument_type: file.txt
+    files:
+      - pigeon-polyA-list@GRCh38_08232022
+  
+  # Parameter arguments
+  sample_name:
+    argument_type: parameter.string
+
+  library_id:
+    argument_type: parameter.string
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #   pbmerge
+  ############################################
+  pbmerge:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_files_bam:
+        argument_type: file.bam
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: pbmerge output BAM (FLNC)
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.xlarge
+        - m5a.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
+      ebs_size: 4x
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_pbmerge
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   isoseq_cluster2
+  ############################################
+  isoseq_cluster2:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_files_bam:
+        argument_type: file.bam
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: isoseq cluster2 output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+        s3_lifecycle_category: no_storage
+
+      output_cluster_csv:
+        description: isoseq cluster2 clusters CSV
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Statistics
+        ### -> TO KEEP
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5n.9xlarge
+        - c5.9xlarge
+        - c5a.8xlarge
+        - c5.12xlarge
+        - c5a.12xlarge
+        - c6i.8xlarge
+        - c6i.12xlarge
+        - m6a.8xlarge
+        - m6a.12xlarge
+        - m6i.8xlarge
+        - m6i.12xlarge
+      ebs_size: "3x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_isoseq_cluster2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #  pbmm2
+  ############################################
+  pbmm2:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_reads:
+        argument_type: file.bam
+        source: isoseq_cluster2
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter argument
+      nthreads_sorting:
+        argument_type: parameter.integer
+        value: 4
+
+      memory_sorting:
+        argument_type: parameter.string
+        value: "4G"
+
+      preset:
+        argument_type: parameter.string
+        value: "ISOSEQ"
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: pbmm2 output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5n.9xlarge
+        - c5.9xlarge
+        - c5a.8xlarge
+        - c5.12xlarge
+        - c5a.12xlarge
+        - c6i.8xlarge
+        - c6i.12xlarge
+        - m6a.8xlarge
+        - m6a.12xlarge
+        - m6i.8xlarge
+        - m6i.12xlarge
+      ebs_size: "2x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_pbmm2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   ReplaceReadGroups
+  ############################################
+  ReplaceReadGroups:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: pbmm2
+        source_argument_name: output_file_bam
+
+      # Parameter argument
+      sample_name:
+        argument_type: parameter.string
+
+      library_id:
+        argument_type: parameter.string
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: ReplaceReadGroups output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        ### -> FINAL OUTPUT
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.xlarge
+        - c5.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_ReplaceReadGroups
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   isoseq_collapse
+  ############################################
+  isoseq_collapse:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: ReplaceReadGroups
+        source_argument_name: output_file_bam
+
+      input_flnc_bam:
+        argument_type: file.bam
+        source: pbmerge
+        source_argument_name: output_file_bam
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_gff:
+        description: isoseq collapse output GFF
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Transcript Expression
+        s3_lifecycle_category: no_storage
+
+      output_file_fasta:
+        description: isoseq collapse output FASTA
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Transcript Sequence
+        ### -> FINAL OUTPUT
+
+      output_count_txt:
+        description: isoseq collapse FLNC counts TXT
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_group_txt:
+        description: isoseq collapse groups TXT
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Statistics
+        ### -> TO KEEP
+
+      output_report_json:
+        description: isoseq collapse report JSON
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_stat_txt:
+        description: isoseq collapse stats TXT
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Statistics
+        ### -> TO KEEP
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.xlarge
+        - m5a.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
+      ebs_size: "2x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_isoseq_collapse
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   pigeon_prepare
+  ############################################
+  pigeon_prepare:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      gencode_annotation_gtf:
+        argument_type: file.gtf
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      input_file_gff:
+        argument_type: file.gff
+        source: isoseq_collapse
+        source_argument_name: output_file_gff
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_gtf:
+        description: pigeon prepare output GTF
+        data_category:
+          - Genome Annotation
+        data_type:
+          - Gene Model
+        s3_lifecycle_category: no_storage
+
+      output_file_gff:
+        description: pigeon prepare output GFF
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Transcript Expression
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.large
+        - c5.large
+      ebs_size: "2x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_pigeon_prepare
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   pigeon_classify
+  ############################################
+  pigeon_classify:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_gff:
+        argument_type: file.gff
+        source: pigeon_prepare
+        source_argument_name: output_file_gff
+
+      input_file_gtf:
+        argument_type: file.gtf
+        source: pigeon_prepare
+        source_argument_name: output_file_gtf
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      input_count_txt:
+        argument_type: file.txt
+        source: isoseq_collapse
+        source_argument_name: output_count_txt
+
+      # Optional file arguments
+      refTSS_bed:
+        argument_type: file.bed
+
+      polyA_txt:
+        argument_type: file.txt
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_junctions_txt:
+        description: pigeon classify junctions TXT
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Transcript Model
+        s3_lifecycle_category: no_storage
+
+      output_classification_txt:
+        description: pigeon classify classification TXT
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Transcript Expression
+        s3_lifecycle_category: no_storage
+
+      output_report_json:
+        description: pigeon classify report JSON
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_summary_txt:
+        description: pigeon classify summary TXT
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.xlarge
+        - m5a.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
+      ebs_size: "2x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_pigeon_classify
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   pigeon_filter
+  ############################################
+  pigeon_filter:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_classification_txt:
+        argument_type: file.txt
+        source: pigeon_classify
+        source_argument_name: output_classification_txt
+
+      input_junctions_txt:
+        argument_type: file.txt
+        source: pigeon_classify
+        source_argument_name: output_junctions_txt
+
+      input_file_gff:
+        argument_type: file.gff
+        source: pigeon_prepare
+        source_argument_name: output_file_gff
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_reasons_txt:
+        description: pigeon filter reasons TXT
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Statistics
+        ### -> TO KEEP
+
+      output_classification_txt:
+        description: pigeon filter classification TXT
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Transcript Expression
+        ### -> FINAL OUTPUT
+
+      output_junctions_txt:
+        description: pigeon filter junctions TXT
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Transcript Model
+        ### -> FINAL OUTPUT
+
+      output_file_gff:
+        description: pigeon filter output GFF
+        data_category:
+          - RNA Quantification
+        data_type:
+          - Transcript Expression
+        ### -> FINAL OUTPUT
+
+      output_summary_txt:
+        description: pigeon filter summary TXT
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+      output_report_json:
+        description: pigeon filter report JSON
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.large
+        - c5.large
+      ebs_size: "2x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_pigeon_filter
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   pigeon_report
+  ############################################
+  pigeon_report:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_classification_txt:
+        argument_type: file.txt
+        source: pigeon_filter
+        source_argument_name: output_classification_txt
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_saturation_txt:
+        description: pigeon report saturation TXT
+        data_category:
+          - Transcriptome Annotation
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.large
+        - c5.large
+      ebs_size: 1.1x
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_pigeon_report
+      behavior_on_capacity_limit: wait_and_retry
