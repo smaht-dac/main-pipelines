@@ -300,13 +300,7 @@ workflows:
           - RNA Quantification
         data_type:
           - Gene Expression
-        output_status: Final Output
-        # These fields are required to link metadata for the naming
-        software:
-          - smaht:Software-RNA-SeQC_v2.4.2
-        annotation:
-          - smaht:ReferenceFile-gencode_v47
-        reference_genome: GRCh38
+        s3_lifecycle_category: no_storage
 
       output_tar_gz:
         description: RNA-SeQC auxiliary output
@@ -315,6 +309,7 @@ workflows:
           - Quality Control
         data_type:
           - Statistics
+          - Gene Expression
         output_status: Final Output
         # These fields are required to link metadata for the naming
         software:
@@ -471,7 +466,6 @@ workflows:
           - Quality Control
         data_type:
           - Statistics
-          - Image
 
     ## EC2 Configuration to use ########
     ####################################

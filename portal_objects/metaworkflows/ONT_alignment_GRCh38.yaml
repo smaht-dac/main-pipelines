@@ -2,7 +2,7 @@
 #     General information for the pipeline
 #############################################################
 name: ONT_alignment_GRCh38
-description: End-to-end alignment pipeline for Oxford Nanopore Technology. |
+description: End-to-end alignment pipeline for Oxford Nanopore Technology data. |
              Run Sentieon minimap2 to align input FASTQ files. |
              Link methyl tags and read groups from corresponding unaligned input BAM files. |
              Sort the alignment BAM files by coordinates. |
