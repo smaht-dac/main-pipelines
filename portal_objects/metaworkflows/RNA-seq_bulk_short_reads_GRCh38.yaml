@@ -188,6 +188,8 @@ workflows:
         - r5a.4xlarge
         - r6i.4xlarge
         - r6a.4xlarge
+        - r7i.4xlarge
+        - r7a.4xlarge
       ebs_size: "5x"
       ebs_optimized: True
       spot_instance: True

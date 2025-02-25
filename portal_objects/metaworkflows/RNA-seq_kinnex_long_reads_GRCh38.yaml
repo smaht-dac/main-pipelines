@@ -148,6 +148,9 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
+        - m7a.8xlarge
+        - m7i.8xlarge
+        - m7i.12xlarge
       ebs_size: "3x"
       ebs_optimized: True
       spot_instance: True
@@ -214,6 +217,9 @@ workflows:
         - m6a.12xlarge
         - m6i.8xlarge
         - m6i.12xlarge
+        - m7a.8xlarge
+        - m7i.8xlarge
+        - m7i.12xlarge
       ebs_size: "2x"
       ebs_optimized: True
       spot_instance: True
@@ -266,8 +272,14 @@ workflows:
     ####################################
     config:
       instance_type:
-        - m5.xlarge
         - c5.xlarge
+        - c5a.xlarge
+        - m5.xlarge
+        - m5a.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
       ebs_size: "2.5x"
       ebs_optimized: True
       spot_instance: True
@@ -412,8 +424,14 @@ workflows:
     ####################################
     config:
       instance_type:
-        - m5.large
         - c5.large
+        - c5a.large
+        - m5.large
+        - m5a.large
+        - m6i.large
+        - m6a.large
+        - m7i.large
+        - m7a.large
       ebs_size: "2x"
       ebs_optimized: True
       spot_instance: True
@@ -606,8 +624,14 @@ workflows:
     ####################################
     config:
       instance_type:
-        - m5.large
         - c5.large
+        - c5a.large
+        - m5.large
+        - m5a.large
+        - m6i.large
+        - m6a.large
+        - m7i.large
+        - m7a.large
       ebs_size: "2x"
       ebs_optimized: True
       spot_instance: True
@@ -646,8 +670,14 @@ workflows:
     ####################################
     config:
       instance_type:
-        - m5.xlarge
         - c5.xlarge
+        - c5a.xlarge
+        - m5.xlarge
+        - m5a.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
       ebs_size: 1.1x
       ebs_optimized: True
       spot_instance: True
@@ -694,6 +724,8 @@ workflows:
         - m5.large
         - m6i.large
         - m6a.large
+        - m7i.large
+        - m7a.large
       ebs_size: "1.1x"
       ebs_optimized: True
       spot_instance: True
@@ -780,5 +812,5 @@ workflows:
       ebs_size: 10
       ebs_optimized: True
       spot_instance: True
-      run_name: run_parse-qc_RNA-SeQC_Quality_Metrics
+      run_name: run_parse-qc_Kinnex_Quality_Metrics
       behavior_on_capacity_limit: wait_and_retry
