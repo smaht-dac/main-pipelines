@@ -93,7 +93,7 @@ workflows:
         - m6a.xlarge
         - m7i.xlarge
         - m7a.xlarge
-      ebs_size: "4x"
+      ebs_size: "3x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_pbmerge
@@ -121,7 +121,7 @@ workflows:
       output_file_bam:
         description: isoseq cluster2 output BAM
         data_category:
-          - Sequencing Reads
+          - Consensus Reads
         data_type:
           - Unaligned Reads
         s3_lifecycle_category: no_storage
@@ -129,7 +129,7 @@ workflows:
       output_cluster_csv:
         description: isoseq cluster2 clusters CSV
         data_category:
-          - Sequencing Reads
+          - Consensus Reads
         data_type:
           - Statistics
 
@@ -197,7 +197,7 @@ workflows:
       output_file_bam:
         description: pbmm2 output BAM
         data_category:
-          - Sequencing Reads
+          - Consensus Reads
         data_type:
           - Aligned Reads
         s3_lifecycle_category: no_storage
@@ -220,7 +220,7 @@ workflows:
         - m7a.8xlarge
         - m7i.8xlarge
         - m7i.12xlarge
-      ebs_size: "2x"
+      ebs_size: "1.5x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_pbmm2
@@ -257,7 +257,7 @@ workflows:
       output_file_bam:
         description: ReplaceReadGroups output BAM
         data_category:
-          - Sequencing Reads
+          - Consensus Reads
         data_type:
           - Aligned Reads
         output_status: Final Output
@@ -371,7 +371,7 @@ workflows:
         - m6a.xlarge
         - m7i.xlarge
         - m7a.xlarge
-      ebs_size: "2x"
+      ebs_size: "1.5x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_isoseq_collapse
@@ -519,7 +519,7 @@ workflows:
         - m6a.xlarge
         - m7i.xlarge
         - m7a.xlarge
-      ebs_size: "2x"
+      ebs_size: "1.5x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_pigeon_classify
