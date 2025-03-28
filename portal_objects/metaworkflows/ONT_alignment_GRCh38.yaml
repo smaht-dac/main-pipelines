@@ -35,6 +35,16 @@ input:
     files:
       - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
 
+  regions:
+    argument_type: file.txt
+    files:
+      - verifybamid2-regions-1000g-10k@GRCh38
+
+  resources_vb2:
+    argument_type: file.vb2
+    files:
+      - verifybamid2-resources-1000g-10k@GRCh38
+
   # Required parameter argument
   sample_name:
     argument_type: parameter.string
@@ -50,13 +60,16 @@ input:
   qc_ruleset:
     argument_type: qc_ruleset.object
     qc_thresholds:
+      freemix_alpha:
+        rule: Estimate of Contamination [VerifyBamID2]|<|0.01|1
+        flag: True
       mapped:
         rule: Percentage of Reads Mapped [Samtools]|>|98|0
         flag: True
       mismatch_rate:
         rule: Aligned Bases Mismatch Rate [Picard]|<|0.01|1
         flag: True
-    qc_rule: "{mapped} and {mismatch_rate}"
+    qc_rule: "{freemix_alpha} and {mapped} and {mismatch_rate}"
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
@@ -683,6 +696,108 @@ workflows:
 
   ## Workflow definition #####################
   ############################################
+  samtools_mpileup_regions:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      regions:
+        argument_type: file.txt
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_pileup_tsv:
+        description: samtools mpileup output TSV
+        data_category:
+          - Germline Variant Calls
+        data_type:
+          - Statistics
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.4xlarge
+        - m5.4xlarge
+        - m6i.4xlarge
+        - m6a.4xlarge
+        - m7i.4xlarge
+        - m7a.4xlarge
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_samtools_mpileup_regions
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
+  verifybamid2_pileup:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_pileup_tsv:
+        argument_type: file.tsv
+        source: samtools_mpileup_regions
+        source_argument_name: output_pileup_tsv
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      resources_vb2:
+        argument_type: file.vb2
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 4
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: VerifyBamID2 output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.xlarge
+        - m5.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_verifybamid2_pileup
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  ############################################
   mosdepth:
 
     ## Specific arguments ##############
@@ -738,7 +853,7 @@ workflows:
   ## Workflow definition #####################
   #   parse-qc_BAM_Quality_Metrics_single-end
   ############################################
-  parse-qc_BAM_Quality_Metrics_single-end:
+  parse-qc_BAM_Quality_Metrics_single-end_verifybamid2:
 
     ## Specific arguments ##############
     ####################################
@@ -813,6 +928,11 @@ workflows:
         source: bamstats
         source_argument_name: output_file_txt
 
+      VERIFYBAMID2_OUTPUT:
+        argument_type: file.txt
+        source: verifybamid2_pileup
+        source_argument_name: output_file_txt
+
       MOSDEPTH_SUMMARY:
         argument_type: file.txt
         source: mosdepth
@@ -855,5 +975,5 @@ workflows:
       ebs_size: 10
       ebs_optimized: True
       spot_instance: True
-      run_name: run_parse-qc_BAM_Quality_Metrics_single-end
+      run_name: run_parse-qc_BAM_Quality_Metrics_single-end_verifybamid2
       behavior_on_capacity_limit: wait_and_retry

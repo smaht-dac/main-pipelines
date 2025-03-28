@@ -116,6 +116,12 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-STAR_2.7.10b
+        annotation:
+          - smaht:ReferenceFile-gencode_v47
 
       output_tar_gz:
         description: STAR auxiliary output
@@ -307,11 +313,9 @@ workflows:
       output_tar_gz:
         description: RNA-SeQC auxiliary output
         data_category:
-          - RNA Quantification
           - Quality Control
         data_type:
           - Statistics
-          - Gene Expression
         output_status: Final Output
         # These fields are required to link metadata for the naming
         software:

@@ -657,7 +657,7 @@ workflows:
 
       coverage:
         argument_type: parameter.integer
-        value: 20
+        value: 30
 
       # Parameter arguments
       nthreads:
@@ -687,7 +687,7 @@ workflows:
         - m6a.large
         - m7i.large
         - m7a.large
-      ebs_size: "2.1x"
+      ebs_size: "2.5x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_samtools_subsample
@@ -716,7 +716,7 @@ workflows:
       # Parameter arguments
       nthreads:
         argument_type: parameter.integer
-        value: 2
+        value: 4
 
     ## Output ##########################
     ####################################
@@ -734,11 +734,11 @@ workflows:
     ####################################
     config:
       instance_type:
-        - r5a.4xlarge
-        - r6a.4xlarge
-        - r6i.4xlarge
-        - r7a.4xlarge
-        - r7i.4xlarge
+        - r5a.xlarge
+        - r6a.xlarge
+        - r6i.xlarge
+        - r7a.xlarge
+        - r7i.xlarge
       ebs_size: "1.1x"
       ebs_optimized: True
       spot_instance: True
