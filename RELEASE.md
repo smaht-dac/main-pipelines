@@ -19,7 +19,7 @@
 | **RNA-seq_kinnex_long_reads_GRCh38**    | main-pipelines    | *Pipeline released*                             |
 | **Illumina_FASTQ_quality_metrics**      | qc-pipelines      | *No change since 0.1.0*                         |
 | **short_reads_FASTQ_quality_metrics**   | qc-pipelines      | *No change since 0.1.0*                         |
-| **long_reads_FASTQ_quality_metrics**    | qc-pipelines      | *No change since 0.1.0*                         |
+| **long_reads_FASTQ_quality_metrics**    | qc-pipelines      | + NanoPlot updated to 1.44.1                    |
 | **sample_identity_check**               | qc-pipelines      | *Pipeline released*                             |
 | **cram_to_fastq_paired-end**            | shared-pipelines  | *No change since 0.1.0*                         |
 | **bam_to_fastq_paired-end**             | shared-pipelines  | *No change since 0.0.1*                         |
