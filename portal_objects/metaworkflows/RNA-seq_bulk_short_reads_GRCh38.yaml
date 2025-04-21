@@ -40,6 +40,11 @@ input:
     files:
       - rsem-index-no-alt-no-hla-gencode47@GCA_000001405.15_GRCh38_no_decoy
 
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
   gene_annotation_gtf:
     argument_type: file.gtf
     files:
@@ -49,6 +54,11 @@ input:
     argument_type: file.tar_gz
     files:
       - tissue-classifier-model@v20241125
+
+  resources_vb2:
+    argument_type: file.vb2
+    files:
+      - verifybamid2-resources-1000g-100k@GRCh38
 
   # Parameter arguments
   sample_name:
@@ -116,12 +126,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
-        output_status: Final Output
-        # These fields are required to link metadata for the naming
-        software:
-          - smaht:Software-STAR_2.7.10b
-        annotation:
-          - smaht:ReferenceFile-gencode_v47
+        s3_lifecycle_category: no_storage
 
       output_tar_gz:
         description: STAR auxiliary output
@@ -422,6 +427,59 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
+  ############################################
+  verifybamid2:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_file_bam:
+        argument_type: file.bam
+        source: sentieon_Dedup
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      resources_vb2:
+        argument_type: file.vb2
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 2
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_txt:
+        description: VerifyBamID2 output TXT
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.large
+        - m5.large
+        - m6i.large
+        - m6a.large
+        - m7i.large
+        - m7a.large
+      ebs_size: "1.1x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_verifybamid2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
   #   parse-qc_RNA-SeQC_Quality_Metrics
   ############################################
   parse-qc_RNA-SeQC_Quality_Metrics:
@@ -447,6 +505,11 @@ workflows:
       input_classifier_txt:
         argument_type: file.txt
         source: tissue_classifier
+        source_argument_name: output_file_txt
+
+      input_verifybamid2_txt:
+        argument_type: file.txt
+        source: verifybamid2
         source_argument_name: output_file_txt
 
       input_rnaseqc_tar_gz:
