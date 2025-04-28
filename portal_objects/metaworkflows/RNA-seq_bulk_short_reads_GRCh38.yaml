@@ -75,6 +75,15 @@ input:
     argument_type: parameter.string
     # "rf" or "fr"
 
+  # QC ruleset argument
+  qc_ruleset:
+    argument_type: qc_ruleset.object
+    qc_thresholds:
+      freemix_alpha:
+        rule: Estimate of Contamination [VerifyBamID2]|<|0.01|1
+        flag: True
+    qc_rule: "{freemix_alpha}"
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -516,6 +525,10 @@ workflows:
         argument_type: file.tar_gz
         source: RNA-SeQC
         source_argument_name: output_tar_gz
+
+      # QC ruleset arguments
+      qc_ruleset:
+        argument_type: qc_ruleset.object
 
     ## Output ##########################
     ####################################

@@ -15,7 +15,7 @@
 | **PacBio_alignment_GRCh38**             | main-pipelines    | *No change since 0.1.0*                         |
 | **ONT_alignment_GRCh38**                | main-pipelines    | + Added VerifyBamID                         |
 | **Hi-C_alignment_GRCh38**               | main-pipelines    | *No change since 0.1.0*                         |
-| **RNA-seq_bulk_short_reads_GRCh38**     | main-pipelines    | + GENCODE release updated (*v45 -> v47*)<br>+ Added tissues classifier |
+| **RNA-seq_bulk_short_reads_GRCh38**     | main-pipelines    | + GENCODE release updated (*v45 -> v47*)<br>+ Added tissues classifier<br>+ Added VerifyBamID |
 | **RNA-seq_kinnex_long_reads_GRCh38**    | main-pipelines    | *Pipeline released*                             |
 | **Illumina_FASTQ_quality_metrics**      | qc-pipelines      | *No change since 0.1.0*                         |
 | **short_reads_FASTQ_quality_metrics**   | qc-pipelines      | *No change since 0.1.0*                         |

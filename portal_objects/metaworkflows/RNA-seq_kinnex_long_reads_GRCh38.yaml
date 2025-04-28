@@ -51,6 +51,12 @@ input:
   library_id:
     argument_type: parameter.string
 
+  singletons:
+    # Setting this to True will trigger the use of the --singletons flag
+    #   in the isoseq cluster2 command
+    argument_type: parameter.boolean
+    value: False
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -100,6 +106,129 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
+  #  pbmm2@reads
+  ############################################
+  pbmm2@reads:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_reads:
+        argument_type: file.bam
+        source: pbmerge
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter argument
+      nthreads_sorting:
+        argument_type: parameter.integer
+        value: 4
+
+      memory_sorting:
+        argument_type: parameter.string
+        value: "4G"
+
+      preset:
+        argument_type: parameter.string
+        value: "ISOSEQ"
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: pbmm2 output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5n.9xlarge
+        - c5.9xlarge
+        - c5a.8xlarge
+        - c5.12xlarge
+        - c5a.12xlarge
+        - c6i.8xlarge
+        - c6i.12xlarge
+        - m6a.8xlarge
+        - m6a.12xlarge
+        - m6i.8xlarge
+        - m6i.12xlarge
+        - m7a.8xlarge
+        - m7i.8xlarge
+        - m7i.12xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_pbmm2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   ReplaceReadGroups@reads
+  ############################################
+  ReplaceReadGroups@reads:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: pbmm2@reads
+        source_argument_name: output_file_bam
+
+      # Parameter argument
+      sample_name:
+        argument_type: parameter.string
+
+      library_id:
+        argument_type: parameter.string
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: ReplaceReadGroups output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.xlarge
+        - c5a.xlarge
+        - m5.xlarge
+        - m5a.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_ReplaceReadGroups
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
   #   isoseq_cluster2
   ############################################
   isoseq_cluster2:
@@ -111,6 +240,9 @@ workflows:
       # File argument
       input_files_bam:
         argument_type: file.bam
+
+      singletons:
+        argument_type: parameter.boolean
 
     ## Output ##########################
     #     Output files for the workflow
@@ -158,9 +290,9 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  #  pbmm2
+  #  pbmm2@transcripts
   ############################################
-  pbmm2:
+  pbmm2@transcripts:
 
     ## Specific arguments ##############
     ####################################
@@ -220,16 +352,16 @@ workflows:
         - m7a.8xlarge
         - m7i.8xlarge
         - m7i.12xlarge
-      ebs_size: "1.5x"
+      ebs_size: "2.5x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_pbmm2
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  #   ReplaceReadGroups
+  #   ReplaceReadGroups@transcripts
   ############################################
-  ReplaceReadGroups:
+  ReplaceReadGroups@transcripts:
 
     ## Specific arguments ##############
     ####################################
@@ -238,7 +370,7 @@ workflows:
       # File argument
       input_file_bam:
         argument_type: file.bam
-        source: pbmm2
+        source: pbmm2@transcripts
         source_argument_name: output_file_bam
 
       # Parameter argument
@@ -298,7 +430,7 @@ workflows:
       # File argument
       input_file_bam:
         argument_type: file.bam
-        source: ReplaceReadGroups
+        source: ReplaceReadGroups@transcripts
         source_argument_name: output_file_bam
 
       input_flnc_bam:
@@ -482,7 +614,7 @@ workflows:
       output_junctions_txt:
         description: pigeon classify junctions TXT
         data_category:
-          - Transcriptome Annotation
+          - RNA Quantification
         data_type:
           - Transcript Model
         s3_lifecycle_category: no_storage
@@ -490,7 +622,7 @@ workflows:
       output_classification_txt:
         description: pigeon classify classification TXT
         data_category:
-          - Transcriptome Annotation
+          - RNA Quantification
         data_type:
           - Transcript Expression
         s3_lifecycle_category: no_storage
@@ -567,7 +699,7 @@ workflows:
       output_classification_txt:
         description: pigeon filter classification TXT
         data_category:
-          - Transcriptome Annotation
+          - RNA Quantification
         data_type:
           - Transcript Expression
         output_status: Final Output
@@ -581,7 +713,7 @@ workflows:
       output_junctions_txt:
         description: pigeon filter junctions TXT
         data_category:
-          - Transcriptome Annotation
+          - RNA Quantification
         data_type:
           - Transcript Model
         output_status: Final Output
@@ -662,7 +794,7 @@ workflows:
       output_saturation_txt:
         description: pigeon report saturation TXT
         data_category:
-          - Transcriptome Annotation
+          - RNA Quantification
         data_type:
           - Statistics
 
@@ -696,7 +828,7 @@ workflows:
       # File argument
       input_file_bam:
         argument_type: file.bam
-        source: ReplaceReadGroups
+        source: ReplaceReadGroups@reads
         source_argument_name: output_file_bam
 
       # Parameter argument
@@ -733,6 +865,70 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
+  #   FLNC_ImportTags
+  ############################################
+  FLNC_ImportTags:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_bam:
+        argument_type: file.bam
+        source: ReplaceReadGroups@reads
+        source_argument_name: output_file_bam
+
+      input_stat_txt:
+        argument_type: file.txt
+        source: isoseq_collapse
+        source_argument_name: output_stat_txt
+
+      input_classification_txt:
+        argument_type: file.txt
+        source: pigeon_filter
+        source_argument_name: output_classification_txt
+
+      # Parameter argument
+      nthreads:
+        argument_type: parameter.integer
+        value: 4
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      # File output
+      output_file_bam:
+        description: Annotated FLNC output BAM
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-pbmm2_1.13.0
+        alignment_details:
+          - Sorted
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - r5a.xlarge
+        - r6a.xlarge
+        - r6i.xlarge
+        - r7a.xlarge
+        - r7i.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_FLNC_ImportTags
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
   #   parse-qc_Kinnex_Quality_Metrics
   ############################################
   parse-qc_Kinnex_Quality_Metrics:
@@ -744,7 +940,7 @@ workflows:
       # File argument
       input_file_bam:
         argument_type: file.bam
-        source: ReplaceReadGroups
+        source: FLNC_ImportTags
         source_argument_name: output_file_bam
         mount: True
         # this file is actually not used by the code but is needed
