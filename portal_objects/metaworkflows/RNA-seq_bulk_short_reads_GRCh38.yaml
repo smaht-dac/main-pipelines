@@ -82,7 +82,28 @@ input:
       freemix_alpha:
         rule: Estimate of Contamination [VerifyBamID2]|<|0.01|1
         flag: True
-    qc_rule: "{freemix_alpha}"
+      rrna_rate:
+        rule: rRNA Rate [RNA-SeQC]|<|0.01|1
+        flag: True
+      library_complexity:
+        rule: Estimated Library Complexity [RNA-SeQC]|>|50000000|0
+        flag: True
+      exonic_intron_ratio:
+        rule: Exonic/Intron Ratio [RNA-SeQC]|<|5|100
+        flag: True
+      mapping_rate:
+        rule: Mapping Rate [RNA-SeQC]|>|0.85|0
+        flag: True
+      genes_detected:
+        rule: Genes Detected [RNA-SeQC]|>|25000|0
+        flag: True
+      intergenic_rate:
+        rule: Intergenic Rate [RNA-SeQC]|<|0.1|1
+        flag: True
+      chimeric_rate:
+        rule: Percentage of Chimeric Reads [RNA-SeQC]|<|0.75|1
+        flag: True
+    qc_rule: "{freemix_alpha} and {rrna_rate} and {library_complexity} and {exonic_intron_ratio} and {mapping_rate} and {genes_detected} and {intergenic_rate} and {chimeric_rate}"
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies

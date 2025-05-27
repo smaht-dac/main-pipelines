@@ -109,7 +109,10 @@ input:
       mismatch_rate:
         rule: Aligned Bases Mismatch Rate [Picard]|<|0.008|1
         flag: True
-    qc_rule: "{freemix_alpha} and {duplicates} and {mapped} and {mapped_proper_pairs} and {mismatch_rate}"
+      insert_size:
+        rule: Mean Insert Size [Picard]|>|300|0
+        flag: True
+    qc_rule: "{freemix_alpha} and {duplicates} and {mapped} and {mapped_proper_pairs} and {mismatch_rate} and {insert_size}"
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
