@@ -74,6 +74,14 @@ input:
     argument_type: parameter.array
     value: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
 
+  optical_dup_pix_dist:
+    # The maximum offset between two duplicate clusters in order to consider them optical duplicates.
+    # This should be set to 100 for (circa 2011+) read names and typical flowcells.
+    # Structured flow cells (NovaSeq, HiSeq 4000, X) should use ~2500.
+    # For older conventions, distances could be to some fairly small number (e.g. 5-10 pixels).
+    argument_type: parameter.integer
+    value: 2500
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -407,6 +415,9 @@ workflows:
         argument_type: parameter.array
         source_argument_name: shards_index
         input_dimension: 1
+
+      optical_dup_pix_dist:
+        argument_type: parameter.integer
 
     ## Output ##########################
     #     Output files for the workflow
