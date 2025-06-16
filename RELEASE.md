@@ -2,12 +2,12 @@
 
 ### 0.2.0
 
-* **shared-pipelines** ()
-* **alignment-pipelines** ()
-* **sentieon-pipelines** ()
-* **qc-pipelines** ()
-* **rnaseq-pipelines** ()
-* **smaht-pipeline-utils** ()
+* **shared-pipelines** (5fb7cf4)
+* **alignment-pipelines** (0329b80)
+* **sentieon-pipelines** (72726af)
+* **qc-pipelines** (3ac3df3)
+* **rnaseq-pipelines** (c9ba0ad)
+* **smaht-pipeline-utils** (f96e35f)
 
 | Pipeline (*MetaWorkflow*)               | Repository        | Change/Feature                                  |
 |-----------------------------------------|-------------------|-------------------------------------------------|
