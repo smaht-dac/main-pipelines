@@ -67,13 +67,9 @@ input:
   library_id:
     argument_type: parameter.string
 
-  is_stranded:
-    argument_type: parameter.string
-    # "true" or "false"
-
   strandedness:
+    # "rf" or "fr" or "unstranded"
     argument_type: parameter.string
-    # "rf" or "fr"
 
   # QC ruleset argument
   qc_ruleset:
@@ -256,7 +252,7 @@ workflows:
         argument_type: file.tar_gz
 
       # Parameter argument
-      is_stranded:
+      strandedness:
         argument_type: parameter.string
 
     ## Output ##########################

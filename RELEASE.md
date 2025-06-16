@@ -1,5 +1,31 @@
 # CHANGELOG
 
+### 0.3.0
+
+* **shared-pipelines** ()
+* **alignment-pipelines** ()
+* **sentieon-pipelines** ()
+* **qc-pipelines** ()
+* **rnaseq-pipelines** ()
+* **smaht-pipeline-utils** ()
+
+| Pipeline (*MetaWorkflow*)               | Repository        | Change/Feature                                  |
+|-----------------------------------------|-------------------|-------------------------------------------------|
+| **Illumina_alignment_GRCh38**           | main-pipelines    | *No change since 0.1.0*                         |
+| **PacBio_alignment_GRCh38**             | main-pipelines    | *No change since 0.1.0*                         |
+| **ONT_alignment_GRCh38**                | main-pipelines    | *No change since 0.2.0*                         |
+| **Hi-C_alignment_GRCh38**               | main-pipelines    | *No change since 0.1.0*                         |
+| **RNA-seq_bulk_short_reads_GRCh38**     | main-pipelines    | + Updated RSEM and RNA-SeQC implementation to accept FR/fr-secondstrand libraries |
+| **RNA-seq_kinnex_long_reads_GRCh38**    | main-pipelines    | *No change since 0.2.0*                         |
+| **Illumina_FASTQ_quality_metrics**      | qc-pipelines      | *No change since 0.1.0*                         |
+| **short_reads_FASTQ_quality_metrics**   | qc-pipelines      | *No change since 0.1.0*                         |
+| **long_reads_FASTQ_quality_metrics**    | qc-pipelines      | *No change since 0.2.0*                         |
+| **sample_identity_check**               | qc-pipelines      | *No change since 0.2.0*                         |
+| **cram_to_fastq_paired-end**            | shared-pipelines  | *No change since 0.1.0*                         |
+| **bam_to_fastq_paired-end**             | shared-pipelines  | *No change since 0.0.1*                         |
+
+---
+
 ### 0.2.0
 
 * **shared-pipelines** (5fb7cf4)
