@@ -11,7 +11,7 @@
 
 | Pipeline (*MetaWorkflow*)               | Repository        | Change/Feature                                  |
 |-----------------------------------------|-------------------|-------------------------------------------------|
-| **Illumina_alignment_GRCh38**           | main-pipelines    | *No change since 0.1.0*                         |
+| **Illumina_alignment_GRCh38**           | main-pipelines    | + Disabled generation of BI/BD tags              |
 | **PacBio_alignment_GRCh38**             | main-pipelines    | *No change since 0.1.0*                         |
 | **ONT_alignment_GRCh38**                | main-pipelines    | *No change since 0.2.0*                         |
 | **Hi-C_alignment_GRCh38**               | main-pipelines    | *No change since 0.1.0*                         |
