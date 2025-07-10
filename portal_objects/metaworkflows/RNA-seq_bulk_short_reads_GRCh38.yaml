@@ -97,7 +97,7 @@ input:
         rule: Intergenic Rate [RNA-SeQC]|<|0.1|1
         flag: True
       chimeric_rate:
-        rule: Percentage of Chimeric Reads [RNA-SeQC]|<|0.75|100
+        rule: Percentage of Chimeric Reads [RNA-SeQC]|<|1|100
         flag: True
     qc_rule: "{freemix_alpha} and {rrna_rate} and {library_complexity} and {exonic_intron_ratio} and {mapping_rate} and {genes_detected} and {intergenic_rate} and {chimeric_rate}"
 

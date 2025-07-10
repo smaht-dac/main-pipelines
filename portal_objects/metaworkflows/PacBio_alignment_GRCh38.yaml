@@ -50,7 +50,7 @@ input:
         rule: Estimate of Contamination [VerifyBamID2]|<|0.01|1
         flag: True
       mapped:
-        rule: Percentage of Reads Mapped [Samtools]|>|98|0
+        rule: Percentage of Reads Mapped [Samtools]|>|97|0
         flag: True
       mismatch_rate:
         rule: Aligned Bases Mismatch Rate [Picard]|<|0.003|1

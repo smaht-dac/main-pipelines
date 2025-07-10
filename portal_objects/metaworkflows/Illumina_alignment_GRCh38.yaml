@@ -106,19 +106,19 @@ input:
         rule: Estimate of Contamination [VerifyBamID2]|<|0.01|1
         flag: True
       duplicates:
-        rule: Percentage of Reads Duplicated [Samtools]|<|8|100
+        rule: Percentage of Reads Duplicated [Samtools]|<|15|100
         flag: True
       mapped:
-        rule: Percentage of Reads Mapped [Samtools]|>|99|0
+        rule: Percentage of Reads Mapped [Samtools]|>|97|0
         flag: True
       mapped_proper_pairs:
-        rule: Percentage of Properly Paired Reads [Samtools]|>|96|0
+        rule: Percentage of Properly Paired Reads [Samtools]|>|92|0
         flag: True
       mismatch_rate:
         rule: Aligned Bases Mismatch Rate [Picard]|<|0.008|1
         flag: True
       insert_size:
-        rule: Mean Insert Size [Picard]|>|300|0
+        rule: Mean Insert Size [Picard]|>|250|0
         flag: True
     qc_rule: "{freemix_alpha} and {duplicates} and {mapped} and {mapped_proper_pairs} and {mismatch_rate} and {insert_size}"
 
