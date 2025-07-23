@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 0.3.0
+### 0.3.1
 
 * **shared-pipelines** ()
 * **alignment-pipelines** ()
@@ -8,6 +8,33 @@
 * **qc-pipelines** ()
 * **rnaseq-pipelines** ()
 * **smaht-pipeline-utils** ()
+
+| Pipeline (*MetaWorkflow*)               | Repository        | Change/Feature                                  |
+|-----------------------------------------|-------------------|-------------------------------------------------|
+| **Illumina_alignment_GRCh38**           | main-pipelines    | + Added conversion to CRAM                      |
+| **PacBio_alignment_GRCh38**             | main-pipelines    | + Added conversion to CRAM                      |
+| **ONT_alignment_GRCh38**                | main-pipelines    | + Added conversion to CRAM                      |
+| **Hi-C_alignment_GRCh38**               | main-pipelines    | *No change since 0.1.0*                         |
+| **RNA-seq_bulk_short_reads_GRCh38**     | main-pipelines    | *No change since 0.3.0*                         |
+| **RNA-seq_kinnex_long_reads_GRCh38**    | main-pipelines    | *No change since 0.2.0*                         |
+| **Illumina_FASTQ_quality_metrics**      | qc-pipelines      | *No change since 0.1.0*                         |
+| **short_reads_FASTQ_quality_metrics**   | qc-pipelines      | *No change since 0.1.0*                         |
+| **long_reads_FASTQ_quality_metrics**    | qc-pipelines      | *No change since 0.2.0*                         |
+| **sample_identity_check**               | qc-pipelines      | *No change since 0.2.0*                         |
+| **cram_to_fastq_paired-end**            | shared-pipelines  | *No change since 0.1.0*                         |
+| **bam_to_fastq_paired-end**             | shared-pipelines  | *No change since 0.0.1*                         |
+| **bam_to_cram**                         | shared-pipelines  | *Pipeline released*                             |
+
+---
+
+### 0.3.0
+
+* **shared-pipelines** (5fb7cf4)
+* **alignment-pipelines** (0329b80)
+* **sentieon-pipelines** (1bf89cf)
+* **qc-pipelines** (b9f62c1)
+* **rnaseq-pipelines** (9bc7b81)
+* **smaht-pipeline-utils** (f96e35f)
 
 | Pipeline (*MetaWorkflow*)               | Repository        | Change/Feature                                  |
 |-----------------------------------------|-------------------|-------------------------------------------------|

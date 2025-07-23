@@ -55,7 +55,7 @@ input:
     # Setting this to True will trigger the use of the --singletons flag
     #   in the isoseq cluster2 command
     argument_type: parameter.boolean
-    value: False
+    value: True
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies

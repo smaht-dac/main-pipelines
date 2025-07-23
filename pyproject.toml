@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "main-pipelines"
-version = "0.3.0"
+version = "0.3.1"
 description = "Main repository for deploying pipelines for the SMaHT portal."
 authors = ["Michele Berselli <berselli.michele@gmail.com>",
             "Alexander Veit",

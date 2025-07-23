@@ -484,7 +484,7 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
         - m7a.8xlarge
-      ebs_size: "0.1x"
+      ebs_size: "0.2x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_LocusCollector_apply
@@ -689,13 +689,7 @@ workflows:
           - Sequencing Reads
         data_type:
           - Aligned Reads
-        output_status: Final Output
-        # These fields are required to link metadata for the naming
-        software:
-          - smaht:Software-Sentieon_BWA-MEM_202308.01
-        alignment_details:
-          - Sorted
-        reference_genome: GRCh38
+        s3_lifecycle_category: no_storage
 
     ## EC2 Configuration to use ########
     ####################################
@@ -715,6 +709,60 @@ workflows:
       ebs_optimized: True
       spot_instance: False
       run_name: run_samtools_merge
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   bam_to_cram
+  ############################################
+  bam_to_cram:
+
+    ## Workflow arguments ##############
+    ####################################
+    input:
+
+      input_file_bam:
+        argument_type: file.bam
+        source: samtools_merge
+        source_argument_name: output_file_bam
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      output_file_cram:
+        description: analysis-ready CRAM (from BAM)
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Sentieon_BWA-MEM_202308.01
+        alignment_details:
+          - Sorted
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.xlarge
+        - m5a.xlarge
+        - m5.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      ebs_iops: 16000
+      ebs_throughput: 1000
+      run_name: run_bam_to_cram
       behavior_on_capacity_limit: wait_and_retry
 
 ## Quality Controls #########################################
@@ -1331,8 +1379,8 @@ workflows:
       # File argument
       input_file_bam:
         argument_type: file.bam
-        source: samtools_merge
-        source_argument_name: output_file_bam
+        source: bam_to_cram
+        source_argument_name: output_file_cram
         mount: True
         # this file is actually not used by the code but is needed
         #   to specify where the quality metrics object need to be linked

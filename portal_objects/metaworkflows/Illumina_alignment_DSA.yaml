@@ -444,7 +444,7 @@ workflows:
         - m6a.8xlarge
         - m7i.8xlarge
         - m7a.8xlarge
-      ebs_size: "0.1x"
+      ebs_size: "0.2x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_LocusCollector_apply
