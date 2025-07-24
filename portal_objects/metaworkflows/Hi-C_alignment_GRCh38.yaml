@@ -108,8 +108,6 @@ workflows:
         - m7i.8xlarge
         - m7i.12xlarge
       ebs_size: "6.5x"
-      ebs_iops: 16000
-      ebs_throughput: 1000
       ebs_optimized: True
       spot_instance: True
       run_name: run_sentieon_bwa-mem_sort_Hi-C

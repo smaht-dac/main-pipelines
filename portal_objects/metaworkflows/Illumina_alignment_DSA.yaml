@@ -562,8 +562,6 @@ workflows:
         - m7i.xlarge
         - m7a.xlarge
       ebs_size: "3x"
-      ebs_iops: 16000
-      ebs_throughput: 1000
       ebs_optimized: True
       spot_instance: False
       run_name: run_samtools_merge
