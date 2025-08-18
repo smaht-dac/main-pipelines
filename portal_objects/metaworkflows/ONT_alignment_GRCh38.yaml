@@ -180,7 +180,7 @@ workflows:
         - t3.xlarge
       ebs_size: "4.5x"
       ebs_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_methylink
       behavior_on_capacity_limit: wait_and_retry
 
