@@ -344,6 +344,7 @@ workflows:
       output_tar_gz:
         description: RNA-SeQC auxiliary output
         data_category:
+          - RNA Quantification
           - Quality Control
         data_type:
           - Statistics

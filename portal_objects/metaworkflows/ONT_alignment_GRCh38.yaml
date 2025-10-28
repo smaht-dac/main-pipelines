@@ -335,13 +335,13 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5.xlarge
-        - m5a.xlarge
-        - m5.xlarge
-        - m6i.xlarge
-        - m6a.xlarge
-        - m7i.xlarge
-        - m7a.xlarge
+        - c5.2xlarge
+        - m5a.2xlarge
+        - m5.2xlarge
+        - m6i.2xlarge
+        - m6a.2xlarge
+        - m7i.2xlarge
+        - m7a.2xlarge
       ebs_size: "2.5x"
       ebs_optimized: True
       spot_instance: True
