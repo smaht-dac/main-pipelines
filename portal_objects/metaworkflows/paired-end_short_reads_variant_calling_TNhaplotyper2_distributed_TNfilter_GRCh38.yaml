@@ -5,7 +5,7 @@ name: paired-end_short_reads_variant_calling_TNhaplotyper2_distributed_TNfilter_
 description: Run Sentieon TNhaplotyper2 (Mutect2) algorithm for tumor only. |
              Run Sentieon TNfilter (FilterMutectCalls) algorithm for tumor only. |
              Require a file with population allele frequencies in VCF format. |
-             Accept a list of BAM files and produce raw calls in VCF format. |
+             Accept a list of CRAM files and produce raw calls in VCF format. |
              Implemented to run on shards in distributed mode
 
 category:
@@ -18,8 +18,8 @@ category:
 input:
 
   # File arguments
-  input_files_bam:
-    argument_type: file.bam
+  input_files_cram:
+    argument_type: file.cram
     dimensionality: 1
 
   genome_reference_fasta:
@@ -65,8 +65,8 @@ workflows:
     input:
 
       # File arguments
-      input_files_bam:
-        argument_type: file.bam
+      input_files_cram:
+        argument_type: file.cram
         # Since it works by region we mount the files
         mount: True
 
@@ -193,6 +193,10 @@ workflows:
           - SNV
           - Indel
         output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Sentieon_TNhaplotyper2_202503.01
+        reference_genome: GRCh38
 
     ## EC2 Configuration to use ########
     ####################################

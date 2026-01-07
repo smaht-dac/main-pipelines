@@ -1,0 +1,160 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: paired-end_short_plus_PacBio_variant_calling_DNAscopeHybrid_GRCh38
+description: Run Sentieon DNAscope Hybrid on Illumina and PacBio data. |
+             Produce germline variant calls in VCF format, including SNVs, SVs, and CNVs. |
+             Produce metrics directory. |
+             Accept short-read data in CRAM format and long-read data in CRAM format
+
+category:
+  - Variant Calling
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File arguments
+  input_files_short_cram:
+    argument_type: file.cram
+    dimensionality: 1
+
+  input_files_long_cram:
+    argument_type: file.cram
+    dimensionality: 1
+
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  genome_reference_bwt:
+    argument_type: file.bwt
+    files:
+      - complete-reference-bwt-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  dbsnp_vcf_gz:
+    argument_type: file.vcf_gz
+    files:
+      - dbsnp-all@138_GRCh38
+
+  sentieon_model_bundle:
+    argument_type: file.bundle
+    files:
+      - sentieon-DNAscope-Hybrid-model-bundle@illumina_pacbio_1.1
+
+  # Required parameter arguments
+  sample_name:
+    argument_type: parameter.string
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #  sentieon_DNAscopeHybrid
+  ############################################
+  sentieon_DNAscopeHybrid:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_files_short_cram:
+        argument_type: file.cram
+
+      input_files_long_cram:
+        argument_type: file.cram
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      genome_reference_bwt:
+        argument_type: file.bwt
+
+      dbsnp_vcf_gz:
+        argument_type: file.vcf_gz
+      
+      sentieon_model_bundle:
+        argument_type: file.bundle
+
+      # Parameter arguments
+      sample_name:
+        argument_type: parameter.string
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: DNAscopeHybrid SNV-indel output VCF
+        data_category:
+          - Germline Variant Calls
+        data_type:
+          - SNV
+          - Indel
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Sentieon_DNAscopeHybrid_202503.01
+        reference_genome: GRCh38
+
+      output_file_sv_vcf_gz:
+        description: DNAscopeHybrid SV output VCF
+        data_category:
+          - Germline Variant Calls
+        data_type:
+          - SV
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Sentieon_DNAscopeHybrid_202503.01
+        reference_genome: GRCh38
+
+      output_file_cnv_vcf_gz:
+        description: DNAscopeHybrid CNV output VCF
+        data_category:
+          - Germline Variant Calls
+        data_type:
+          - CNV
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Sentieon_DNAscopeHybrid_202503.01
+        reference_genome: GRCh38
+
+      # Directory output
+      output_dir_metrics_tar_gz:
+        description: DNAscopeHybrid metrics
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Sentieon_DNAscopeHybrid_202503.01
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5a.8xlarge
+        - c6i.8xlarge
+        - c6a.8xlarge
+        - m6i.8xlarge
+        - m6a.8xlarge
+        - m7i.8xlarge
+        - m7a.8xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_sentieon_DNAscopeHybrid
+      behavior_on_capacity_limit: wait_and_retry

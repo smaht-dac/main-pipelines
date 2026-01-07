@@ -1,0 +1,277 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: paired-end_short_reads_variant_calling_strelka2_distributed_GRCh38
+description: Run Strelka2 algorithm in paired-mode (tumor-normal) for somatic variant calling. |
+             Accepts a list of CRAM files as input and produces final calls in VCF format. |
+             Implemented to distribute run on genomic regions defined in a BED file
+
+category:
+  - Variant Calling
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File inputs
+  input_files_cram:
+    argument_type: file.cram
+    dimensionality: 1
+
+  input_normal_cram:
+    argument_type: file.cram
+    files:
+      - strelka2-matched-normal@SMAFINVNFEWN_SMAFIFO11KT3
+
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  regions_bed_gz:
+    argument_type: file.bed_gz
+    files:
+      - strelka2-33regions-chrM-120M@GCA_000001405.15_GRCh38_no_decoy
+
+  # Optional parameter inputs
+  region_index:
+    # Need to be 1-based indices matching the number of regions in regions_bed_gz
+    argument_type: parameter.array
+    value: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #  samtools_merge_cram
+  ############################################
+  samtools_merge_cram:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_files_cram:
+        argument_type: file.cram
+        mount: True
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 4
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_cram:
+        description: Sample CRAM (merged)
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.xlarge
+        - c5a.xlarge
+        - m5.xlarge
+        - m5a.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: False
+      run_name: run_samtools_merge_cram
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #  strelka2_region
+  ############################################
+  strelka2_region:
+
+    ## Lock shards #####################
+    ####################################
+    shards: [["0"], ["1"], ["2"], ["3"], ["4"], ["5"], ["6"], ["7"], ["8"], ["9"], ["10"], ["11"], ["12"], ["13"], ["14"], ["15"], ["16"], ["17"], ["18"], ["19"], ["20"], ["21"], ["22"], ["23"], ["24"], ["25"], ["26"], ["27"], ["28"], ["29"], ["30"], ["31"], ["32"]]
+    # These shards structure needs to match the number of regions in regions_bed_gz and defined by region_index
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_normal_cram:
+        argument_type: file.cram
+        # Since it works by region we mount the files
+        mount: True
+
+      input_tumor_cram:
+        argument_type: file.cram
+        source: samtools_merge_cram
+        source_argument_name: output_file_cram
+        # Since it works by region we mount the files
+        mount: True
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Regions
+      regions_bed_gz:
+        argument_type: file.bed_gz
+
+      line_index:
+        argument_type: parameter.integer
+        source_argument_name: region_index
+        input_dimension: 1
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_snvs_vcf_gz:
+        description: Strelka2 SNV output VCF (region)
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+        s3_lifecycle_category: no_storage
+
+      output_indels_vcf_gz:
+        description: Strelka2 indel output VCF (region)
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - Indel
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5n.2xlarge
+        - c5.2xlarge
+        - c5a.2xlarge
+        - c6a.2xlarge
+        - c6i.2xlarge
+        - c7a.2xlarge
+        - c7i.2xlarge
+        - m6a.2xlarge
+        - m6i.2xlarge
+        - m7a.2xlarge
+        - m7i.2xlarge
+      ebs_size: 10
+      # 10 GB should be enough for the region-based processing
+      # Increase if you encounter out of disk space errors
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_strelka2_region
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #  bcftools_concat@SNV
+  ############################################
+  bcftools_concat@SNV:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_files_vcf_gz:
+        argument_type: file.vcf_gz
+        source: strelka2_region
+        source_argument_name: output_snvs_vcf_gz
+        gather_input: 1
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: Strelka2 SNV output VCF
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Strelka2_2.9.10
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.xlarge
+        - c5.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_bcftools_concat
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #  bcftools_concat@Indel
+  ############################################
+  bcftools_concat@Indel:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_files_vcf_gz:
+        argument_type: file.vcf_gz
+        source: strelka2_region
+        source_argument_name: output_indels_vcf_gz
+        gather_input: 1
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: Strelka2 indel output VCF
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - Indel
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Strelka2_2.9.10
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.xlarge
+        - c5.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_bcftools_concat
+      behavior_on_capacity_limit: wait_and_retry

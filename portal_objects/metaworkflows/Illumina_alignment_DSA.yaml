@@ -524,6 +524,7 @@ workflows:
         source: shards_to_ReadGroups
         source_argument_name: output_file_bam
         gather: 1
+        mount: True
 
       # Parameter argument
       nthreads:

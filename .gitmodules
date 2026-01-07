@@ -16,3 +16,6 @@
 [submodule "rnaseq-pipelines"]
 	path = rnaseq-pipelines
 	url = https://github.com/smaht-dac/rnaseq-pipelines
+[submodule "calling-pipelines"]
+	path = calling-pipelines
+	url = https://github.com/smaht-dac/calling-pipelines

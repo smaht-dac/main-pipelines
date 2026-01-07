@@ -1,0 +1,115 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: PacBio_variant_calling_longcallD_GRCh38
+description: Run longcallD algorithm for somatic variant calling using PacBio long read data. |
+             Accepts a main CRAM file and a list of additional CRAM files as input (required) |
+             and produces final calls in VCF format
+
+category:
+  - Variant Calling
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File inputs
+  input_file_cram:
+    argument_type: file.cram
+    dimensionality: 0
+
+  additional_input_files_cram:
+    argument_type: file.cram
+    dimensionality: 1
+
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  mei_reference_fasta:
+    argument_type: file.fa
+    files:
+      - AluY-L1-SVA-cons-noPA@252eaf3
+
+  # Parameter inputs
+  sample_name:
+    argument_type: parameter.string
+
+  # Optional parameter inputs
+  nthreads:
+    argument_type: parameter.integer
+    value: 32
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #  longcallD_compress_index
+  ############################################
+  longcallD_compress_index:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_file_cram:
+        argument_type: file.cram
+
+      additional_input_files_cram:
+        argument_type: file.cram
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      mei_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter arguments
+      sample_name:
+        argument_type: parameter.string
+
+      nthreads:
+        argument_type: parameter.integer
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: longcallD output VCF
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+          - Indel
+          - MEI
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-longcallD_v0.0.8
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - r5.8xlarge
+        - r5n.8xlarge
+        - r5a.8xlarge
+        - r6i.8xlarge
+        - r6a.8xlarge
+        - r7i.8xlarge
+        - r7a.8xlarge
+      ebs_size: "1.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_longcallD_compress_index
+      behavior_on_capacity_limit: wait_and_retry

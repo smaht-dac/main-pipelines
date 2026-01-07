@@ -385,7 +385,7 @@ workflows:
 
       # File output
       output_file_bam:
-        description: ReplaceReadGroups output BAM
+        description: Transcript consensus sequence aligned BAM
         data_category:
           - Consensus Reads
         data_type:
@@ -453,7 +453,7 @@ workflows:
       output_file_fasta:
         description: isoseq collapse output FASTA
         data_category:
-          - RNA Quantification
+          - Consensus Reads
         data_type:
           - Transcript Sequence
         output_status: Final Output
@@ -898,7 +898,7 @@ workflows:
 
       # File output
       output_file_bam:
-        description: Annotated FLNC output BAM
+        description: FLNC (full-length, non-chimeric cDNA reads) aligned BAM
         data_category:
           - Sequencing Reads
         data_type:

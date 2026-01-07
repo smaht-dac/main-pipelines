@@ -671,6 +671,7 @@ workflows:
         source: sentieon_QualCal
         source_argument_name: output_file_bam
         gather: 1
+        mount: True
 
       # Parameter argument
       nthreads:
@@ -722,6 +723,7 @@ workflows:
         argument_type: file.bam
         source: samtools_merge
         source_argument_name: output_file_bam
+        mount: True
 
       genome_reference_fasta:
         argument_type: file.fa
