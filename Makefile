@@ -62,6 +62,7 @@ deploy-all:
 			alignment-pipelines \
 			qc-pipelines \
 			rnaseq-pipelines \
+			calling-pipelines \
 			.
 
 info:
