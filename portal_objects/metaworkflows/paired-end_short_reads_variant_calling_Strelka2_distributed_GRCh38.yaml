@@ -1,7 +1,7 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: paired-end_short_reads_variant_calling_strelka2_distributed_GRCh38
+name: paired-end_short_reads_variant_calling_Strelka2_distributed_GRCh38
 description: Run Strelka2 algorithm in paired-mode (tumor-normal) for somatic variant calling. |
              Accepts a list of CRAM files as input and produces final calls in VCF format. |
              Implemented to distribute run on genomic regions defined in a BED file

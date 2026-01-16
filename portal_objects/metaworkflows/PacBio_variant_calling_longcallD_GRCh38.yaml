@@ -108,7 +108,9 @@ workflows:
         - r6a.8xlarge
         - r7i.8xlarge
         - r7a.8xlarge
-      ebs_size: "1.5x"
+        - r8i.8xlarge
+        - r8a.8xlarge
+      ebs_size: "2x"
       ebs_optimized: True
       spot_instance: True
       run_name: run_longcallD_compress_index

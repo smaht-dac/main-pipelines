@@ -149,12 +149,18 @@ workflows:
         - c5a.8xlarge
         - c6i.8xlarge
         - c6a.8xlarge
+        - c7i.8xlarge
+        - c7a.8xlarge
+        - c8i.8xlarge
+        - c8a.8xlarge
         - m6i.8xlarge
         - m6a.8xlarge
         - m7i.8xlarge
         - m7a.8xlarge
-      ebs_size: "2.5x"
+        - m8i.8xlarge
+        - m8a.8xlarge
+      ebs_size: "5x"
       ebs_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_sentieon_DNAscopeHybrid
       behavior_on_capacity_limit: wait_and_retry

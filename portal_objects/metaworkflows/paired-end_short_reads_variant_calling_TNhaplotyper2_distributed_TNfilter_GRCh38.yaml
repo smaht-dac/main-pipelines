@@ -125,17 +125,19 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5n.9xlarge
-        - c5.9xlarge
         - c5a.8xlarge
-        - c5.12xlarge
-        - c5a.12xlarge
         - c6i.8xlarge
-        - c6i.12xlarge
-        - m6a.8xlarge
-        - m6a.12xlarge
+        - c6a.8xlarge
+        - c7i.8xlarge
+        - c7a.8xlarge
+        - c8i.8xlarge
+        - c8a.8xlarge
         - m6i.8xlarge
-        - m6i.12xlarge
+        - m6a.8xlarge
+        - m7i.8xlarge
+        - m7a.8xlarge
+        - m8i.8xlarge
+        - m8a.8xlarge
       ebs_size: 50
       # This should be more than enough
       #   for the final file with the calls per shards
@@ -202,13 +204,18 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5.9xlarge
-        - c6i.8xlarge
-        - c6a.8xlarge
-        - m6i.8xlarge
-        - m6a.8xlarge
-        - m7i.8xlarge
-        - m7a.8xlarge
+        - c6i.4xlarge
+        - c6a.4xlarge
+        - c7i.4xlarge
+        - c7a.4xlarge
+        - c8i.4xlarge
+        - c8a.4xlarge
+        - m6i.4xlarge
+        - m6a.4xlarge
+        - m7i.4xlarge
+        - m7a.4xlarge
+        - m8i.4xlarge
+        - m8a.4xlarge
       ebs_size: "2.5x"
       ebs_optimized: True
       spot_instance: True

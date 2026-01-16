@@ -9,21 +9,25 @@
 * **rnaseq-pipelines** ()
 * **smaht-pipeline-utils** ()
 
-| Pipeline (*MetaWorkflow*)               | Repository        | Change/Feature                                  |
-|-----------------------------------------|-------------------|-------------------------------------------------|
-| **Illumina_alignment_GRCh38**           | main-pipelines    | + Added conversion to CRAM                      |
-| **PacBio_alignment_GRCh38**             | main-pipelines    | + Added conversion to CRAM                      |
-| **ONT_alignment_GRCh38**                | main-pipelines    | + Added conversion to CRAM                      |
-| **Hi-C_alignment_GRCh38**               | main-pipelines    | *No change since 0.1.0*                         |
-| **RNA-seq_bulk_short_reads_GRCh38**     | main-pipelines    | *No change since 0.3.0*                         |
-| **RNA-seq_kinnex_long_reads_GRCh38**    | main-pipelines    | *No change since 0.2.0*                         |
-| **Illumina_FASTQ_quality_metrics**      | qc-pipelines      | *No change since 0.1.0*                         |
-| **short_reads_FASTQ_quality_metrics**   | qc-pipelines      | *No change since 0.1.0*                         |
-| **long_reads_FASTQ_quality_metrics**    | qc-pipelines      | *No change since 0.2.0*                         |
-| **sample_identity_check**               | qc-pipelines      | *No change since 0.2.0*                         |
-| **cram_to_fastq_paired-end**            | shared-pipelines  | *No change since 0.1.0*                         |
-| **bam_to_fastq_paired-end**             | shared-pipelines  | *No change since 0.0.1*                         |
-| **bam_to_cram**                         | shared-pipelines  | *Pipeline released*                             |
+| Pipeline (*MetaWorkflow*)                     | Repository        | Change/Feature                                  |
+|-----------------------------------------------|-------------------|-------------------------------------------------|
+| **Illumina_alignment_GRCh38**                 | main-pipelines    | + Added conversion to CRAM                      |
+| **PacBio_alignment_GRCh38**                   | main-pipelines    | + Added conversion to CRAM                      |
+| **ONT_alignment_GRCh38**                      | main-pipelines    | + Added conversion to CRAM                      |
+| **Hi-C_alignment_GRCh38**                     | main-pipelines    | *No change since 0.1.0*                         |
+| **RNA-seq_bulk_short_reads_GRCh38**           | main-pipelines    | *No change since 0.3.0*                         |
+| **RNA-seq_kinnex_long_reads_GRCh38**          | main-pipelines    | *No change since 0.2.0*                         |
+| **paired-end_short_plus_PacBio_variant_calling_DNAscopeHybrid_GRCh38**                | main-pipelines    | *Pipeline released* |
+| **paired-end_short_reads_variant_calling_Strelka2_distributed_GRCh38**                | main-pipelines    | *Pipeline released* |
+| **paired-end_short_reads_variant_calling_TNhaplotyper2_distributed_TNfilter_GRCh38**  | main-pipelines    | *Pipeline released* |
+| **PacBio_variant_calling_longcallD_GRCh38**                                           | main-pipelines    | *Pipeline released* |
+| **Illumina_FASTQ_quality_metrics**            | qc-pipelines      | *No change since 0.1.0*                         |
+| **short_reads_FASTQ_quality_metrics**         | qc-pipelines      | *No change since 0.1.0*                         |
+| **long_reads_FASTQ_quality_metrics**          | qc-pipelines      | *No change since 0.2.0*                         |
+| **sample_identity_check**                     | qc-pipelines      | *No change since 0.2.0*                         |
+| **cram_to_fastq_paired-end**                  | shared-pipelines  | *No change since 0.1.0*                         |
+| **bam_to_fastq_paired-end**                   | shared-pipelines  | *No change since 0.0.1*                         |
+| **bam_to_cram**                               | shared-pipelines  | *Pipeline released*                             |
 
 ---
 
