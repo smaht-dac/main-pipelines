@@ -10,7 +10,7 @@ LABEL maintainers="Michele Berselli (berselli.michele@gmail.com), William Ronche
 ## Use latest conda, build for x86_64 and Python 3.8 (default)
 ARG CONDA_VER=latest
 ARG OS_TYPE=x86_64
-ARG PYTHON_VERSION=3.8
+ARG PYTHON_VERSION=3.10.15
 ARG JDK_VERSION=17.0.3
 
 ENV DEBIAN_FRONTEND noninteractive
