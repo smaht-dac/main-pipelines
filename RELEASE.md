@@ -21,6 +21,7 @@
 | **paired-end_short_reads_variant_calling_Strelka2_distributed_GRCh38**                | main-pipelines    | *Pipeline released* |
 | **paired-end_short_reads_variant_calling_TNhaplotyper2_distributed_TNfilter_GRCh38**  | main-pipelines    | *Pipeline released* |
 | **PacBio_variant_calling_longcallD_GRCh38**                                           | main-pipelines    | *Pipeline released* |
+| **PacBio_ONT_variant_calling_Sniffles_GRCh38**                                        | main-pipelines    | *Pipeline released* |
 | **Illumina_FASTQ_quality_metrics**            | qc-pipelines      | *No change since 0.1.0*                         |
 | **short_reads_FASTQ_quality_metrics**         | qc-pipelines      | *No change since 0.1.0*                         |
 | **long_reads_FASTQ_quality_metrics**          | qc-pipelines      | *No change since 0.2.0*                         |
