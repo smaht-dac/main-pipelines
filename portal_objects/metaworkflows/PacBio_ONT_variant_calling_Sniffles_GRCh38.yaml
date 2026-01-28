@@ -80,7 +80,7 @@ workflows:
         output_status: Final Output
         # These fields are required to link metadata for the naming
         software:
-          - smaht:Software-Sniffles_v2.7.1
+          - smaht:Software-Sniffles_v2.7.2
         reference_genome: GRCh38
 
     ## EC2 Configuration to use ########
