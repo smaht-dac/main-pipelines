@@ -1,7 +1,7 @@
 ## Pipeline information #####################################
 #     General information for the pipeline
 #############################################################
-name: SNV_filtering_longcallD_GRCh38
+name: SNV_filtering_GRCh38
 description: Filtering pipeline for SNV calls for a Tissue. |
              Starts from raw calls from TNhaplotyper2, Strelka2, |
              longcallD, and RUFUS. |
