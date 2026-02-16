@@ -1,0 +1,517 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: SNV_filtering_longcallD_GRCh38
+description: Filtering pipeline for SNV calls for a Tissue. |
+             Starts from raw calls from TNhaplotyper2, Strelka2, |
+             longcallD, and RUFUS. |
+             Filters PASS variants, normalizes calls, |
+             and runs two set of filters based on annotations |
+             and cross-technology and -tissue check
+
+category:
+  - Variant Manipulation
+  - Variant Calling
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File arguments
+  input_files_TNhaplotyper2_vcf_gz:
+    argument_type: file.vcf_gz
+    dimensionality: 1
+
+  input_files_Strelka2_vcf_gz:
+    argument_type: file.vcf_gz
+    dimensionality: 1
+
+  input_files_longcallD_vcf_gz:
+    argument_type: file.vcf_gz
+    dimensionality: 1
+
+  input_files_RUFUS_vcf_gz:
+    argument_type: file.vcf_gz
+    dimensionality: 1
+
+  germline_input_file_vcf_gz:
+    argument_type: file.vcf_gz
+    dimensionality: 0
+
+  input_files_sr_cram_tissue_specific:
+    argument_type: file.cram
+    dimensionality: 1
+ 
+  input_files_sr_cram_donor_pooled:
+    argument_type: file.cram
+    dimensionality: 1
+
+  input_files_pb_cram_donor_pooled:
+    argument_type: file.cram
+    dimensionality: 1
+
+  input_files_all_long_read_cram_donor_pooled:
+    argument_type: file.cram
+    dimensionality: 1
+
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  input_files_step1_bed:
+    argument_type: file.bed_gz
+    files:
+      - ucsc-segmental-duplication-regions@GRCh38
+      - ucsc-centromere-regions@GRCh38
+      - ucsc-simple-repeats-satellite-regions@GRCh38
+      - mills-1000g-gold-standard-indel-5bp-extended@GRCh38
+
+  input_files_step2_bed:
+    argument_type: file.bed_gz
+    files:
+      - difficult-regions-smaht@v2_GRCh38
+      - extreme-regions-smaht@v2_GRCh38
+
+  panel_of_normals_fasta:
+    argument_type: file.fa
+    files:
+      - bsmn-pon@syn22024535_GRCh38
+
+  regions_list_txt:
+    argument_type: file.txt
+    files:
+      - vep-regions-chrM-10M@GCA_000001405.15_GRCh38_no_decoy
+
+  vep_database_archive:
+    argument_type: file.tar_gz
+    files:
+      - vep-database@114
+
+  gnomad_vcf_gz:
+    argument_type: file.vcf_gz
+    files:
+      - gnomad-database-minimal@v4.1.0
+
+  # Parameter arguments
+  sample_name:
+    argument_type: parameter.string
+
+  input_files_tissue_descriptors_sr:
+    argument_type: parameter.array
+
+  input_files_tissue_descriptors_all_long_read:
+    argument_type: parameter.array
+
+  input_files_types_all_long_read:
+    argument_type: parameter.array
+
+  sex:
+    argument_type: parameter.string
+
+  current_tissue:
+    argument_type: parameter.string
+
+  tag_filters:
+    argument_type: parameter.array
+    value: ["gnomADc_AF_grpmax_joint/0.001/</float/all/field=|/entry=,/value=&"]
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #   bcftools_PASS_norm_dedup@TNhaplotyper2
+  ############################################
+  bcftools_PASS_norm_dedup@TNhaplotyper2:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_vcf_gz:
+        argument_type: file.vcf_gz
+        source_argument_name: input_files_TNhaplotyper2_vcf_gz
+        scatter: 1
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: PASS filtered and normalized variants from TNhaplotyper2
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+          - Indel
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.large
+        - c5a.large
+        - c6a.large
+        - c6i.large
+        - c7i.large
+        - c7a.large
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_bcftools_PASS_norm_dedup_TNhaplotyper2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   bcftools_PASS_norm_dedup@Strelka2
+  ############################################
+  bcftools_PASS_norm_dedup@Strelka2:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_vcf_gz:
+        argument_type: file.vcf_gz
+        source_argument_name: input_files_Strelka2_vcf_gz
+        scatter: 1
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: PASS filtered and normalized variants from Strelka2
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+          - Indel
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.large
+        - c5a.large
+        - c6a.large
+        - c6i.large
+        - c7i.large
+        - c7a.large
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_bcftools_PASS_norm_dedup_Strelka2
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   bcftools_PASS_norm_dedup@longcallD
+  ############################################
+  bcftools_PASS_norm_dedup@longcallD:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_vcf_gz:
+        argument_type: file.vcf_gz
+        source_argument_name: input_files_longcallD_vcf_gz
+        scatter: 1
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: PASS filtered and normalized variants from longcallD
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+          - Indel
+          - MEI
+          - SV
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.large
+        - c5a.large
+        - c6a.large
+        - c6i.large
+        - c7i.large
+        - c7a.large
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_bcftools_PASS_norm_dedup_longcallD
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   bcftools_PASS_norm_dedup@RUFUS
+  ############################################
+  bcftools_PASS_norm_dedup@RUFUS:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_vcf_gz:
+        argument_type: file.vcf_gz
+        source_argument_name: input_files_RUFUS_vcf_gz
+        scatter: 1
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: PASS filtered and normalized variants from RUFUS
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+          - Indel
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.large
+        - c5a.large
+        - c6a.large
+        - c6i.large
+        - c7i.large
+        - c7a.large
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_bcftools_PASS_norm_dedup_RUFUS
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   snvs_step-1_filter
+  ############################################
+  snvs_step-1_filter:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_files_TNhaplotyper2_vcf_gz:
+        argument_type: file.vcf_gz
+        source_argument_name: output_file_vcf_gz
+        source: bcftools_PASS_norm_dedup@TNhaplotyper2
+        gather: 1
+
+      input_files_Strelka2_vcf_gz:
+        argument_type: file.vcf_gz
+        source_argument_name: output_file_vcf_gz
+        source: bcftools_PASS_norm_dedup@Strelka2
+        gather: 1
+
+      input_files_longcallD_vcf_gz:
+        argument_type: file.vcf_gz
+        source_argument_name: output_file_vcf_gz
+        source: bcftools_PASS_norm_dedup@longcallD
+        gather: 1
+
+      input_files_RUFUS_vcf_gz:
+        argument_type: file.vcf_gz
+        source_argument_name: output_file_vcf_gz
+        source: bcftools_PASS_norm_dedup@RUFUS
+        gather: 1
+
+      germline_input_file_vcf_gz:
+          argument_type: file.vcf_gz
+
+      input_files_bed:
+          argument_type: file.bed_gz
+          source_argument_name: input_files_step1_bed
+
+      panel_of_normals_fasta:
+          argument_type: file.fa
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      regions_list_txt:
+        argument_type: file.txt
+
+      vep_database_archive:
+        argument_type: file.tar_gz
+
+      gnomad_vcf_gz:
+        argument_type: file.vcf_gz
+        mount: True
+
+      # Parameters
+      sample_name:
+        argument_type: parameter.string
+
+      tag_filters:
+        argument_type: parameter.array
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_snvs_vcf_gz:
+        description: filtered SNV calls from Step-1 filters
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        reference_genome: GRCh38
+
+      output_indels_vcf_gz:
+        description: filtered indel calls from Step-1 filters
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - Indel
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c6i.4xlarge
+        - c6a.4xlarge
+        - m6i.4xlarge
+        - m6a.4xlarge
+        - m7i.4xlarge
+        - m7a.4xlarge
+      ebs_size: 100
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_snvs_step-1_filter
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #   snvs_step-2_filter
+  ############################################
+  snvs_step-2_filter:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_vcf_gz:
+        argument_type: file.vcf_gz
+        source_argument_name: output_snvs_vcf_gz
+        source: snvs_step-1_filter
+
+      germline_input_file_vcf_gz:
+        argument_type: file.vcf_gz
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      input_files_sr_cram_tissue_specific:
+        argument_type: file.cram
+        mount: True
+    
+      input_files_sr_cram_donor_pooled:
+        argument_type: file.cram
+        mount: True
+
+      input_files_pb_cram_donor_pooled:
+        argument_type: file.cram
+        mount: True
+
+      input_files_all_long_read_cram_donor_pooled:
+        argument_type: file.cram
+        mount: True
+
+      input_files_bed:
+          argument_type: file.bed_gz
+          source_argument_name: input_files_step2_bed
+
+      # Parameters
+      input_files_tissue_descriptors_sr:
+        argument_type: parameter.array
+
+      input_files_tissue_descriptors_all_long_read:
+        argument_type: parameter.array
+
+      input_files_types_all_long_read:
+        argument_type: parameter.array
+
+      sex:
+        argument_type: parameter.string
+
+      current_tissue:
+        argument_type: parameter.string
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: filtered SNV calls from Step-2 filters
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c6i.4xlarge
+        - c6a.4xlarge
+        - m6i.4xlarge
+        - m6a.4xlarge
+        - m7i.4xlarge
+        - m7a.4xlarge
+      ebs_size: 15
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_snvs_step-2_filter
+      behavior_on_capacity_limit: wait_and_retry

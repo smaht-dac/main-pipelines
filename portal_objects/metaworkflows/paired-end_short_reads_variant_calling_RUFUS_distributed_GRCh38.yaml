@@ -1,0 +1,246 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: paired-end_short_reads_variant_calling_RUFUS_distributed_GRCh38
+description: Run RUFUS algorithm for somatic variant calling. |
+             Accepts a list of CRAM files as input and produces final calls in VCF format. |
+             Implemented to distribute run on genomic regions across 5 shards. |
+             Each shard contains multiple 1Mb regions
+
+category:
+  - Variant Calling
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File inputs
+  input_files_cram:
+    argument_type: file.cram
+    dimensionality: 1
+
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  genome_reference_bwt:
+    argument_type: file.bwt
+    files:
+      - complete-reference-bwt-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+  region_file_tsv:
+    argument_type: file.tsv
+    files:
+      - rufus-regions-byShards-1Mb@GRCh38
+
+  shard_index:
+    argument_type: parameter.array
+    value: [0, 1, 2, 3, 4]
+
+  # Optional parameter inputs
+  nthreads:
+    argument_type: parameter.integer
+    value: 3
+
+  kg1_version:
+    argument_type: parameter.string
+    value: v3.0
+
+  control_version:
+    argument_type: parameter.string
+    value: v1.0
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #  samtools_merge_cram
+  ############################################
+  samtools_merge_cram:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_files_cram:
+        argument_type: file.cram
+        mount: True
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 4
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_cram:
+        description: Sample CRAM (merged)
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5.xlarge
+        - c5a.xlarge
+        - m5.xlarge
+        - m5a.xlarge
+        - m6i.xlarge
+        - m6a.xlarge
+        - m7i.xlarge
+        - m7a.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: False
+      run_name: run_samtools_merge_cram
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #  rufus
+  ############################################
+  rufus:
+
+    ## Lock shards #####################
+    ####################################
+    shards: [["0"], ["1"], ["2"], ["3"], ["4"]]
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_file_cram:
+        argument_type: file.cram
+        source: samtools_merge_cram
+        source_argument_name: output_file_cram
+        # Since it works by region we mount the files
+        mount: True
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      genome_reference_bwt:
+        argument_type: file.bwt
+
+      # Regions
+      region_file_tsv:
+        argument_type: file.tsv
+        mount: True
+
+      shard_index:
+        argument_type: parameter.integer
+        input_dimension: 1
+
+      # Optional
+      nthreads:
+        argument_type: parameter.integer
+
+      kg1_version:
+        argument_type: parameter.string
+
+      control_version:
+        argument_type: parameter.string
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: RUFUS output VCF (shard)
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+          - Indel
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c6i.24xlarge
+        - c6i.32xlarge
+        - c6a.24xlarge
+        - c6a.32xlarge
+        - c6a.48xlarge
+        - c7i.24xlarge
+        - c7i.48xlarge
+        - c7a.24xlarge
+        - c7a.32xlarge
+        - c7a.48xlarge
+        - c8i.24xlarge
+        - c8i.32xlarge
+        - c8a.24xlarge
+      ebs_size: 50
+      # 50 GB should be enough for the region-based processing
+      # Increase if you encounter out of disk space errors
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_rufus
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #  bcftools_concat
+  ############################################
+  bcftools_concat:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_files_vcf_gz:
+        argument_type: file.vcf_gz
+        source: rufus
+        source_argument_name: output_file_vcf_gz
+        gather_input: 1
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_vcf_gz:
+        description: RUFUS output VCF
+        data_category:
+          - Somatic Variant Calls
+        data_type:
+          - SNV
+          - Indel
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-RUFUS_d1.1.2
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5.xlarge
+        - c5.xlarge
+      ebs_size: "2.5x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_bcftools_concat
+      behavior_on_capacity_limit: wait_and_retry
