@@ -424,7 +424,7 @@ workflows:
       ebs_size: 100
       ebs_optimized: True
       spot_instance: True
-      run_name: run_snvs_step-1_filter
+      run_name: run_snvs_step-1_filter_longcallD
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
@@ -440,7 +440,7 @@ workflows:
       input_file_vcf_gz:
         argument_type: file.vcf_gz
         source_argument_name: output_snvs_vcf_gz
-        source: snvs_step-1_filter
+        source: snvs_step-1_filter_longcallD
 
       germline_input_file_vcf_gz:
         argument_type: file.vcf_gz
