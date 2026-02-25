@@ -35,6 +35,7 @@ deploy-base:
 		--post-metaworkflow \
 		--post-wfl \
 		--post-ecr \
+		--local-build \
 		--repos \
 			shared-pipelines
 
@@ -56,6 +57,7 @@ deploy-all:
 		--post-metaworkflow \
 		--post-wfl \
 		--post-ecr \
+		--local-build \
 		--repos \
 			shared-pipelines \
 			sentieon-pipelines \
