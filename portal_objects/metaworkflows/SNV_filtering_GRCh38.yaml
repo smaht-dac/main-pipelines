@@ -435,6 +435,8 @@ workflows:
           - Somatic Variant Calls
         data_type:
           - SNV
+        analysis_details:
+          - Filtered
         output_status: Final Output
         # These fields are required to link metadata for the naming
         reference_genome: GRCh38
