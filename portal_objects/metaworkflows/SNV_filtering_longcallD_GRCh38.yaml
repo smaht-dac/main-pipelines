@@ -28,6 +28,10 @@ input:
     argument_type: file.vcf_gz
     dimensionality: 1
 
+  additional_files_vcf_gz:
+    argument_type: file.vcf_gz
+    dimensionality: 1
+
   input_files_longcallD_vcf_gz:
     argument_type: file.vcf_gz
     dimensionality: 1
@@ -173,9 +177,9 @@ workflows:
       behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
-  #   bcftools_PASS_norm_dedup@Strelka2
+  #   bcftools_PASS_norm_dedup_extra_inputs@Strelka2
   ############################################
-  bcftools_PASS_norm_dedup@Strelka2:
+  bcftools_PASS_norm_dedup_extra_inputs@Strelka2:
 
     ## Specific arguments ##############
     ####################################
@@ -186,6 +190,9 @@ workflows:
         argument_type: file.vcf_gz
         source_argument_name: input_files_Strelka2_vcf_gz
         scatter: 1
+
+      additional_files_vcf_gz:
+        argument_type: file.vcf_gz
 
       genome_reference_fasta:
         argument_type: file.fa
