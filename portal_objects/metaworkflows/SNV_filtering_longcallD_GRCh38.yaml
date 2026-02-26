@@ -347,7 +347,7 @@ workflows:
       input_files_Strelka2_vcf_gz:
         argument_type: file.vcf_gz
         source_argument_name: output_file_vcf_gz
-        source: bcftools_PASS_norm_dedup@Strelka2
+        source: bcftools_PASS_norm_dedup_extra_inputs@Strelka2
         gather: 1
 
       input_files_longcallD_vcf_gz:
