@@ -444,6 +444,8 @@ workflows:
           - SNV
         analysis_details:
           - Filtered
+        software:
+          - smaht:Software-SmahtSNV_1.0.0
         output_status: Final Output
         # These fields are required to link metadata for the naming
         reference_genome: GRCh38
