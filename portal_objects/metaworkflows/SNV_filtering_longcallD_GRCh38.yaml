@@ -521,7 +521,7 @@ workflows:
         - m6a.4xlarge
         - m7i.4xlarge
         - m7a.4xlarge
-      ebs_size: 15
+      ebs_size: 30
       ebs_optimized: True
       spot_instance: True
       run_name: run_snvs_step-2_filter
