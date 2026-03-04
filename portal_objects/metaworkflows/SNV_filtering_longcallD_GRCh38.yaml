@@ -515,12 +515,11 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c6i.4xlarge
-        - c6a.4xlarge
-        - m6i.4xlarge
-        - m6a.4xlarge
-        - m7i.4xlarge
-        - m7a.4xlarge
+        - r5a.4xlarge
+        - r6a.4xlarge
+        - r6i.4xlarge
+        - r7a.4xlarge
+        - r7i.4xlarge
       ebs_size: 30
       ebs_optimized: True
       run_name: run_snvs_step-2_filter
