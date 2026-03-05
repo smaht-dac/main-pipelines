@@ -230,7 +230,7 @@ workflows:
         output_status: Final Output
         # These fields are required to link metadata for the naming
         software:
-          - smaht:Software-RUFUS_d1.1.6
+          - smaht:Software-RUFUS_d1.1.7
         reference_genome: GRCh38
 
     ## EC2 Configuration to use ########
