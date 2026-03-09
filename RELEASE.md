@@ -7,6 +7,7 @@
 * **sentieon-pipelines** ()
 * **qc-pipelines** ()
 * **rnaseq-pipelines** ()
+* **calling-pipelines** ()
 * **smaht-pipeline-utils** ()
 
 | Pipeline (*MetaWorkflow*)                     | Repository        | Change/Feature                                  |
