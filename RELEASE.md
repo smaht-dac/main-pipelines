@@ -25,9 +25,9 @@
 | **PacBio_variant_calling_longcallD_GRCh38**                                           | main-pipelines    | *Pipeline released* |
 | **SNV_filtering_GRCh38**                                                              | main-pipelines    | *Pipeline released* |
 | **PacBio_ONT_variant_calling_Sniffles_GRCh38**                                        | main-pipelines    | *Pipeline released* |
-| **PacBio_ONT_variant_calling_Delly_GRCh38**                                        | main-pipelines    | *Pipeline released* |
-| **PacBio_ONT_variant_calling_Severus_GRCh38**                                        | main-pipelines    | *Pipeline released* |
-| **PacBio_ONT_variant_calling_kanpig_plup_GRCh38**                                        | main-pipelines    | *Pipeline released* |
+| **PacBio_ONT_variant_calling_Delly_GRCh38**                                           | main-pipelines    | *Pipeline released* |
+| **PacBio_ONT_variant_calling_Severus_GRCh38**                                         | main-pipelines    | *Pipeline released* |
+| **PacBio_ONT_variant_calling_kanpig_plup_GRCh38**                                     | main-pipelines    | *Pipeline released* |
 | **Illumina_FASTQ_quality_metrics**            | qc-pipelines      | *No change since 0.1.0*                         |
 | **short_reads_FASTQ_quality_metrics**         | qc-pipelines      | *No change since 0.1.0*                         |
 | **long_reads_FASTQ_quality_metrics**          | qc-pipelines      | *No change since 0.2.0*                         |
