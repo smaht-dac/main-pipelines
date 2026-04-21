@@ -2,7 +2,7 @@
 #     General information for the pipeline
 #############################################################
 name: PacBio_variant_calling_longcallD_GRCh38
-description: Run longcallD algorithm for somatic variant calling using PacBio long read data. |
+description: Run longcallD algorithm for somatic variant calling using PacBio or ONT long read data. |
              Accepts a main CRAM file and a list of additional CRAM files as input (required) |
              and produces final calls in VCF format
 
