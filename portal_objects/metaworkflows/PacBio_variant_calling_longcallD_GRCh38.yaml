@@ -39,6 +39,10 @@ input:
     argument_type: parameter.string
 
   # Optional parameter inputs
+  platform:
+    argument_type: parameter.string
+    value: "--hifi"
+
   nthreads:
     argument_type: parameter.integer
     value: 32
@@ -72,6 +76,9 @@ workflows:
 
       # Parameter arguments
       sample_name:
+        argument_type: parameter.string
+
+      platform:
         argument_type: parameter.string
 
       nthreads:
