@@ -2,8 +2,8 @@
 #     General information for the pipeline
 #############################################################
 name: Illumina_fastp_preprocessing
-description: Pipeline for preprocessing paired-end Illumina data by running |
-             fastp on input FASTQ files to remove polyG artifacts.
+description: Pipeline for preprocessing paired-end Illumina data. |
+             Run fastp on input FASTQ files to remove polyG artifacts.
 
 category:
   - Read Manipulation
@@ -31,7 +31,6 @@ input:
   #   [ lane_0_r2, lane_1_r2, lane_2_r2, ... ]
 
   # Parameter arguments
-
   length_required:
     # Reads shorter than length_required will be discarded
     argument_type: parameter.integer
@@ -104,7 +103,6 @@ workflows:
         data_type:
           - Unaligned Reads
         output_status: Final Output
-        # These fields are required to link metadata for the naming
         software:
           - smaht:Software-fastp_0.23.2
 
@@ -116,7 +114,6 @@ workflows:
         data_type:
           - Unaligned Reads
         output_status: Final Output
-        # These fields are required to link metadata for the naming
         software:
           - smaht:Software-fastp_0.23.2
 
@@ -126,6 +123,8 @@ workflows:
           - Quality Control
         data_type:
           - Statistics
+        software:
+          - smaht:Software-fastp_0.23.2
 
       output_file_failed_fastq_gz:
         description: fastp failed reads FASTQ
@@ -133,6 +132,8 @@ workflows:
           - Sequencing Reads
         data_type:
           - Unaligned Reads
+        software:
+          - smaht:Software-fastp_0.23.2
 
     ## EC2 Configuration to use ########
     ####################################
