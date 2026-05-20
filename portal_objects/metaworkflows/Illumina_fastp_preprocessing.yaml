@@ -1,0 +1,152 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: Illumina_fastp_preprocessing
+description: Pipeline for preprocessing paired-end Illumina data. |
+             Run fastp on input FASTQ files to remove polyG artifacts.
+
+category:
+  - Read Manipulation
+  - Quality Control
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File arguments
+  input_files_r1_fastq_gz:
+    argument_type: file.fastq_gz
+    dimensionality: 1
+
+  input_files_r2_fastq_gz:
+    argument_type: file.fastq_gz
+    dimensionality: 1
+
+  # !! FASTQ files need to be organized by lanes as the following example:
+  # -> input_files_r1_fastq_gz
+  #   [ lane_0_r1, lane_1_r1, lane_2_r1, ... ]
+  # -> input_files_r2_fastq_gz
+  #   [ lane_0_r2, lane_1_r2, lane_2_r2, ... ]
+
+  # Parameter arguments
+  length_required:
+    # Reads shorter than length_required will be discarded
+    argument_type: parameter.integer
+
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+## Pre-processing ###########################################
+#     Steps to pre-process input files
+#       for alignment
+#############################################################
+
+  ## Workflow definition #####################
+  #   fastp_paired-end
+  ############################################
+  fastp_paired-end:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File argument
+      input_file_r1_fastq_gz:
+        argument_type: file.fastq_gz
+        source_argument_name: input_files_r1_fastq_gz
+        scatter: 1
+
+      input_file_r2_fastq_gz:
+        argument_type: file.fastq_gz
+        source_argument_name: input_files_r2_fastq_gz
+        scatter: 1
+
+      # Parameter argument
+      trim_poly_g:
+        # Force polyG tail trimming
+        argument_type: parameter.boolean
+        value: True
+
+      disable_quality_filtering:
+        # If this option is specified, quality filtering is disabled
+        argument_type: parameter.boolean
+        value: True
+
+      disable_adapter_trimming:
+        # If this option is specified, adapter trimming is disabled
+        argument_type: parameter.boolean
+        value: True
+
+      length_required:
+        argument_type: parameter.integer
+
+      nthreads:
+        argument_type: parameter.integer
+        value: 16
+
+    ## Output ##########################
+    #     Output files for the workflow
+    ####################################
+    output:
+
+      # File output
+      output_file_r1_fastq_gz:
+        description: fastp pre-processed FASTQ
+        read_pair_number: "R1"
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+        output_status: Final Output
+        software:
+          - smaht:Software-fastp_0.23.2
+
+      output_file_r2_fastq_gz:
+        description: fastp pre-processed FASTQ
+        read_pair_number: "R2"
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+        output_status: Final Output
+        software:
+          - smaht:Software-fastp_0.23.2
+
+      output_file_json:
+        description: fastp summary JSON
+        data_category:
+          - Quality Control
+        data_type:
+          - Statistics
+        software:
+          - smaht:Software-fastp_0.23.2
+
+      output_file_failed_fastq_gz:
+        description: fastp failed reads FASTQ
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Unaligned Reads
+        software:
+          - smaht:Software-fastp_0.23.2
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - m5a.2xlarge
+        - m5.2xlarge
+        - m6i.2xlarge
+        - m6a.2xlarge
+        - m7i.2xlarge
+        - m7a.2xlarge
+      ebs_size: "3x"
+      ebs_optimized: True
+      spot_instance: True
+      run_name: run_fastp_paired-end
+      behavior_on_capacity_limit: wait_and_retry
