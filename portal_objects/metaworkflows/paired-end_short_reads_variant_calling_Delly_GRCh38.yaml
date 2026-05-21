@@ -55,7 +55,7 @@ workflows:
       # Parameter arguments
       nthreads:
         argument_type: parameter.integer
-        value: 4
+        value: 8
 
     ## Output ##############################
     #     Output files for the workflow
@@ -75,12 +75,10 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c5.xlarge
-        - c5a.xlarge
-        - c6a.xlarge
-        - c6i.xlarge
-        - m5a.xlarge
-        - m6a.xlarge
+        - c5a.2xlarge
+        - c6a.2xlarge
+        - c6i.2xlarge        
+        - c7i.2xlarge
       ebs_size: "1.75x"
       ebs_optimized: True
       spot_instance: False
