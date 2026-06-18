@@ -576,6 +576,6 @@ workflows:
         - m7a.medium
       ebs_size: 10
       ebs_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_parse-qc_RNA-SeQC_Quality_Metrics
       behavior_on_capacity_limit: wait_and_retry

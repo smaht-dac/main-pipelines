@@ -1508,6 +1508,6 @@ workflows:
         - m7a.medium
       ebs_size: 10
       ebs_optimized: True
-      spot_instance: True
+      spot_instance: False
       run_name: run_parse-qc_BAM_Quality_Metrics_paired-end
       behavior_on_capacity_limit: wait_and_retry
