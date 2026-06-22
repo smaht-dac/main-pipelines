@@ -409,7 +409,9 @@ workflows:
     ####################################
     config:
       instance_type:
-        - t3.small
+        - c7a.medium
+        - c8a.medium
+        - m7a.medium
       ebs_size: "1.1x"
       ebs_optimized: True
       spot_instance: True
@@ -833,7 +835,9 @@ workflows:
     ####################################
     config:
       instance_type:
-        - t3.small
+        - c7a.medium
+        - c8a.medium
+        - m7a.medium
       ebs_size: 10
       ebs_optimized: True
       spot_instance: True
