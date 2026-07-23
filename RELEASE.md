@@ -15,7 +15,7 @@
 | **Illumina_alignment_GRCh38**                 | main-pipelines    | + Added conversion to CRAM                      |
 | **PacBio_alignment_GRCh38**                   | main-pipelines    | + Added conversion to CRAM                      |
 | **ONT_alignment_GRCh38**                      | main-pipelines    | + Added conversion to CRAM                      |
-| **Hi-C_alignment_GRCh38**                     | main-pipelines    | *No change since 0.1.0*                         |
+| **Hi-C_alignment_GRCh38**                     | main-pipelines    | + Added conversion to CRAM                      |
 | **RNA-seq_bulk_short_reads_GRCh38**           | main-pipelines    | *No change since 0.3.0*                         |
 | **RNA-seq_kinnex_long_reads_GRCh38**          | main-pipelines    | *No change since 0.2.0*                         |
 | **paired-end_short_plus_PacBio_variant_calling_DNAscopeHybrid_GRCh38**                | main-pipelines    | *Pipeline released* |
