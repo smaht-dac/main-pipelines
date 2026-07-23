@@ -57,6 +57,7 @@ workflows:
       output_file_vcf_gz:
         description: Delly long-read output VCF
         data_category:
+          - Germline Variant Calls
           - Somatic Variant Calls
         data_type:
           - SV
