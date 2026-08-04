@@ -571,8 +571,9 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c7a.medium
-        - c8a.medium
+        - c5a.large
+        - c6a.large
+        - c7a.large
         - m7a.medium
       ebs_size: 10
       ebs_optimized: True
