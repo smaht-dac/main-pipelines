@@ -57,6 +57,15 @@ input:
     argument_type: parameter.boolean
     value: True
 
+  # QC ruleset argument
+  qc_ruleset:
+    argument_type: qc_ruleset.object
+    qc_thresholds:
+      mapped:
+        rule: Percentage of Reads Mapped [Samtools]|>|97|0
+        flag: True
+    qc_rule: "{mapped}"
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -978,6 +987,10 @@ workflows:
         argument_type: file.txt
         source: pigeon_report
         source_argument_name: output_saturation_txt
+
+      # QC ruleset arguments
+      qc_ruleset:
+        argument_type: qc_ruleset.object
 
     ## Output ##########################
     ####################################
