@@ -138,13 +138,15 @@ workflows:
     ## EC2 Configuration to use ########
     ####################################
     config:
-      instance_type: # 64 GiB, 8 cores
-        - r5a.2xlarge
-        - r6a.2xlarge
-        - r6i.2xlarge
-        - r7i.2xlarge
-        - r8i.2xlarge
-      ebs_size: "2x"
+      instance_type: # 16 GiB, 8 cores
+        - c5a.2xlarge
+        - c6a.2xlarge
+        - c6i.2xlarge
+        - c7a.2xlarge
+        - c7i.2xlarge
+        - c8a.2xlarge
+        - c8i.2xlarge
+      ebs_size: "1.5x"
       ebs_optimized: True
       spot_instance: False
       run_name: run_manta
