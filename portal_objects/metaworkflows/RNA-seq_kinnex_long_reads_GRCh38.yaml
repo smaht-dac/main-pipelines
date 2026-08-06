@@ -57,6 +57,15 @@ input:
     argument_type: parameter.boolean
     value: True
 
+  # QC ruleset argument
+  qc_ruleset:
+    argument_type: qc_ruleset.object
+    qc_thresholds:
+      mapped:
+        rule: Percentage of Reads Mapped [Samtools]|>|97|0
+        flag: True
+    qc_rule: "{mapped}"
+
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -979,6 +988,10 @@ workflows:
         source: pigeon_report
         source_argument_name: output_saturation_txt
 
+      # QC ruleset arguments
+      qc_ruleset:
+        argument_type: qc_ruleset.object
+
     ## Output ##########################
     ####################################
     output:
@@ -1002,8 +1015,9 @@ workflows:
     ####################################
     config:
       instance_type:
-        - c7a.medium
-        - c8a.medium
+        - c5a.large
+        - c6a.large
+        - c7a.large
         - m7a.medium
       ebs_size: 10
       ebs_optimized: True
