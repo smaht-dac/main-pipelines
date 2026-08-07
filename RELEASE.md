@@ -26,6 +26,7 @@
 | **SNV_filtering_GRCh38**                                                              | main-pipelines    | *Pipeline released* |
 | **PacBio_ONT_variant_calling_Sniffles_GRCh38**                                        | main-pipelines    | *Pipeline released* |
 | **PacBio_ONT_variant_calling_Delly_GRCh38**                                           | main-pipelines    | *Pipeline released* |
+| **paired-end_short_reads_variant_calling_Manta_GRCh38**                               | main-pipelines    | *Pipeline released* |
 | **PacBio_ONT_variant_calling_Severus_GRCh38**                                         | main-pipelines    | *Pipeline released* |
 | **PacBio_ONT_variant_calling_kanpig_plup_GRCh38**                                     | main-pipelines    | *Pipeline released* |
 | **Illumina_FASTQ_quality_metrics**            | qc-pipelines      | *No change since 0.1.0*                         |

@@ -1,0 +1,153 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: paired-end_short_reads_variant_calling_Manta_GRCh38
+description: Run Manta on short-read data for structural variant calling in tumor-only mode. |
+             Accepts a list of CRAM files as input, merges them, and produces |
+             scored (tumorSV) and unscored candidate (candidateSV) calls in VCF format. |
+
+category:
+  - Variant Calling
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  # File inputs
+  input_files_cram:
+    argument_type: file.cram
+    dimensionality: 1
+
+  genome_reference_fasta:
+    argument_type: file.fa
+    files:
+      - complete-reference-fasta-no-alt@GCA_000001405.15_GRCh38_no_decoy
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #  samtools_merge_cram
+  ############################################
+  samtools_merge_cram:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_files_cram:
+        argument_type: file.cram
+        mount: True
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 8
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File output
+      output_file_cram:
+        description: Sample CRAM (merged)
+        data_category:
+          - Sequencing Reads
+        data_type:
+          - Aligned Reads
+        s3_lifecycle_category: no_storage
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type:
+        - c5a.2xlarge
+        - c6a.2xlarge
+        - c6i.2xlarge
+        - c7i.2xlarge
+      ebs_size: "1.75x"
+      ebs_optimized: True
+      spot_instance: False
+      run_name: run_samtools_merge_cram
+      behavior_on_capacity_limit: wait_and_retry
+
+  ## Workflow definition #####################
+  #  manta
+  ############################################
+  manta:
+
+    ## Specific arguments ##############
+    ####################################
+    input:
+
+      # File arguments
+      input_file_cram:
+        argument_type: file.cram
+        source: samtools_merge_cram
+        source_argument_name: output_file_cram
+
+      genome_reference_fasta:
+        argument_type: file.fa
+
+      # Parameter arguments
+      nthreads:
+        argument_type: parameter.integer
+        value: 8
+
+    ## Output ##############################
+    #     Output files for the workflow
+    ########################################
+    output:
+
+      # File outputs
+      output_file_vcf_gz:
+        description: Manta structural variant VCF (scored)
+        data_category:
+          - Germline Variant Calls
+          - Somatic Variant Calls
+        data_type:
+          - SV
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Manta_1.6.0
+        reference_genome: GRCh38
+
+      output_file_candidate_vcf_gz:
+        description: Manta unscored candidate structural variant VCF
+        data_category:
+          - Germline Variant Calls
+          - Somatic Variant Calls
+        data_type:
+          - SV
+        output_status: Final Output
+        # These fields are required to link metadata for the naming
+        software:
+          - smaht:Software-Manta_1.6.0
+        reference_genome: GRCh38
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+      instance_type: # 16 GiB, 8 cores
+        - c5a.2xlarge
+        - c6a.2xlarge
+        - c6i.2xlarge
+        - c7a.2xlarge
+        - c7i.2xlarge
+        - c8a.2xlarge
+        - c8i.2xlarge
+      ebs_size: "1.5x"
+      ebs_optimized: True
+      spot_instance: False
+      run_name: run_manta
+      behavior_on_capacity_limit: wait_and_retry
