@@ -32,7 +32,7 @@
 | **Illumina_FASTQ_quality_metrics**            | qc-pipelines      | *No change since 0.1.0*                         |
 | **short_reads_FASTQ_quality_metrics**         | qc-pipelines      | *No change since 0.1.0*                         |
 | **long_reads_FASTQ_quality_metrics**          | qc-pipelines      | *No change since 0.2.0*                         |
-| **sample_identity_check**                     | qc-pipelines      | *No change since 0.2.0*                         |
+| **sample_identity_check**                     | qc-pipelines      | + Merged ReplaceReadGroups and Somalier extract into a single step |
 | **cram_to_fastq_paired-end**                  | shared-pipelines  | *No change since 0.1.0*                         |
 | **bam_to_fastq_paired-end**                   | shared-pipelines  | *No change since 0.0.1*                         |
 | **bam_to_cram**                               | shared-pipelines  | *Pipeline released*                             |
