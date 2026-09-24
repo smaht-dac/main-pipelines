@@ -485,11 +485,11 @@ workflows:
     ####################################
     config:
       instance_type:
-        - r5a.4xlarge
-        - r6a.4xlarge
-        - r6i.4xlarge
-        - r7a.4xlarge
-        - r7i.4xlarge
+        - r5a.2xlarge
+        - r6a.2xlarge
+        - r6i.2xlarge
+        - r7i.2xlarge
+        - r8i.2xlarge
       ebs_size: 30
       spot_instance: False
       ebs_optimized: True
