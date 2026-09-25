@@ -24,6 +24,9 @@
 | **paired-end_short_reads_variant_calling_RUFUS_distributed_GRCh38**                   | main-pipelines    | *Pipeline released* |
 | **PacBio_variant_calling_longcallD_GRCh38**                                           | main-pipelines    | *Pipeline released* |
 | **SNV_filtering_GRCh38**                                                              | main-pipelines    | *Pipeline released* |
+| **SNV_filtering_longcallD_GRCh38**                                                    | main-pipelines    | *Pipeline released* |
+| **SNV_filtering_GRCh38_v2**                                                           | main-pipelines    | *Pipeline released* |
+| **SNV_filtering_longcallD_GRCh38_v2**                                                 | main-pipelines    | *Pipeline released* |
 | **PacBio_ONT_variant_calling_Sniffles_GRCh38**                                        | main-pipelines    | *Pipeline released* |
 | **PacBio_ONT_variant_calling_Delly_GRCh38**                                           | main-pipelines    | *Pipeline released* |
 | **paired-end_short_reads_variant_calling_Manta_GRCh38**                               | main-pipelines    | *Pipeline released* |
